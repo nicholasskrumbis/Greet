@@ -26,6 +26,7 @@
 	.navRight:hover {
 		color: white;
 	}
+	/*
 	#navSelected {
 		position:relative; 
 		bottom:5px; 
@@ -35,15 +36,23 @@
 		border-width:1.5px; 
 		border-color:white
 	}
+	*/
 	#logoutButton {
 		padding: 0px 5px 0px 15px;
-		color: #dbdbdb;
+		color: white;
 		background-color: #499DF5;
 		border: none;
 		cursor: pointer;
 	}
 	#logoutButton:hover {
-		color: white;
+		border-style:solid; 
+		border-radius:5px; 
+		border-width:1.5px; 
+		border-color:white;
+		padding: 5px;
+		position:relative;
+		bottom: 6px;
+		left: 1px;
 	}
 	.column {
 		float: left;
@@ -155,7 +164,7 @@
 							'<input type="text" id="' + id + 'Email" name="email" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$" REQUIRED><br/><br/>' +
 							'<input type="submit" value="Invite"><br/>' +
 							'<div id="' + id + 'Link" class="userInfo" style="font-size:16px;">' +
-							'<p>After invititing guests, send them this link to allow them to accept:</p>' +
+							'<p>After inviting guests, send them this link to allow them to accept:</p>' +
 							'<p><mark>' + window.location.hostname + '/Greet/accept.html?event_id=' + id + '</mark></p></div></form></div>';
 					}
 				}
@@ -235,15 +244,31 @@
 <div class="navBar">
 	<a style="color:#ffffff" href="./index.html"><b>Greet</b></a>
 	<button class="navRight" id="logoutButton" onclick="logout();">Logout</button>
-	<a class="navRight" href="./portfolio.html">Portfolio</a>
-	<a class="navRight" href="./favorites.html">Favorites</a>
-	<a id="navSelected" class="navRight" href="./index.html">Home/Profile</a>
 </div>
 
 <div class="column">
 	<p class="colTitle">Your Scheduled Events:</p>
 	<div id="scheduled" class="userInfo">
-		
+		<div class='eventInfo'>
+			<p>Nick's Valorant Tournament</p>
+			<p>4/22/21 at 10PM</p>
+			<p>Location: The Colosseum</p>
+			<button class="expand" type="button" onclick="openAdd('e104');">
+				<i class="fas fa-angle-down fa-2x"></i>
+			</button>
+			<div id="e104" style="margin-left:20px; display:none;" class="userInfo">
+				<p style="font-size:18px;">Invite Guests:</p>
+				<form id="e104Form" style="font-size:16px; margin-left:20px;" onsubmit="addGuest('e104'); return false;">
+					<label for="email">Email: </label>
+					<input type="text" id="e104Email" name="email" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$" REQUIRED><br/><br/>
+					<input type="submit" value="Invite"><br/>
+				</form>
+				<div id="e104Link" class="userInfo" style="font-size:16px;">
+					<p>After invititing guests, send them this link to allow them to accept:</p>
+					<p><mark>window.location.hostname/Greet/accept.html?event_id=e104</mark></p>
+				</div>
+			</div>
+		</div>
 	</div>
 	<br/><br/>
 	<button id="createEvent" type="button" onclick="window.location.href='./create.html'">
