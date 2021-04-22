@@ -4,16 +4,84 @@
 <meta charset="ISO-8859-1">
 <title>Insert title here</title>
 
+<style>
+	body {
+		font-family: Helvetica,serif;
+		margin: 0;
+		padding: 0;
+	}
+	.navBar {
+		background-color: #499DF5;
+		padding: 15px;
+	}
+	.navBar a {
+		color: #dbdbdb;
+		text-decoration: none;
+	}
+	.navRight {
+		float: right;
+		font-size: 13px;
+		padding: 0px 5px 0px 15px;
+	}
+	.navRight:hover {
+		color: white;
+	}
+	#navSelected {
+		position:relative; 
+		bottom:5px; 
+		padding: 5px; 
+		border-style:solid; 
+		border-radius:5px; 
+		border-width:1.5px; 
+		border-color:white
+	}
+	#logoutButton {
+		padding: 0px 5px 0px 15px;
+		color: #dbdbdb;
+		background-color: #499DF5;
+		border: none;
+		cursor: pointer;
+	}
+	#logoutButton:hover {
+		color: white;
+	}
+	.column {
+		float: left;
+		width: 30%;
+		padding: 2% 5%;
+	}
+	.colTitle {
+		font-size: 24px;
+	}
+</style>
+
 <script>
 	function checkLogin() {
 		if (sessionStorage.getItem('UID') == null) {
 			window.location.href = "./login.html";
 		}
 	}
+	
+	function logout() {
+		sessionStorage.clear();
+		window.location.href = "./login.html";
+	}
 </script>
 
 </head>
 <body onload="checkLogin();">
+
+<div class="navBar">
+	<a style="color:#ffffff" href="./index.html"><b>Greet</b></a>
+	<button class="navRight" id="logoutButton" onclick="logout();">Logout</button>
+	<a class="navRight" href="./portfolio.html">Portfolio</a>
+	<a class="navRight" href="./favorites.html">Favorites</a>
+	<a id="navSelected" class="navRight" href="./index.html">Home/Profile</a>
+</div>
+
+<div class="column">
+	<p class="colTitle">Your Scheduled Events:</p>
+</div>
 
 </body>
 </html>
