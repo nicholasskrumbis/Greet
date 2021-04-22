@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Insert title here</title>
+
+<script>
+	function checkLogin() {
+		if (sessionStorage.getItem('UID') == null) {
+			window.location.href = "./login.html";
+		}
+	}
+</script>
+
+</head>
+<body onload="checkLogin();">
+
+</body>
+</html>
