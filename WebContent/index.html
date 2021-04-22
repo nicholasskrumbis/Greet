@@ -72,6 +72,21 @@
 		border-width: 2px;
 		padding: 0px 15px;
 	}
+	.scheduledInfo {
+		font-size: 20px;
+		line-height: 12px;
+		border: solid;
+		border-width: 2px;
+		padding: 0px 15px;
+	}
+	.scheduledInfo1 {
+		font-size: 20px;
+		line-height: 12px;
+		border: solid;
+		border-bottom-color: white;
+		border-width: 2px;
+		padding: 0px 15px;
+	}
 	#createEvent {
 		font-weight: bold;
 		padding: 10px;
@@ -110,9 +125,9 @@
 				else {						
 					for (i=0; i < events.length; i++) {
 						
-						var className = "\"eventInfo\"";
+						var className = "\"scheduledInfo\"";
 						if (i == 0) {
-							className = "\"eventInfo1\"";
+							className = "\"scheduledInfo1\"";
 						}
 						
 						document.getElementById("scheduled").innerHTML += 
@@ -135,17 +150,17 @@
 				const events = JSON.parse(this.responseText);
 
 				if (events.error || events.length < 1) {
-					document.getElementById("scheduled").innerHTML = "You have no scheduled events.";
+					document.getElementById("attending").innerHTML = "You are attending no events.";
 				}
 				else {						
 					for (i=0; i < events.length; i++) {
 						
 						var className = "\"eventInfo\"";
-						if (i == 0) {
+						if (i == 0 && events.length > 1) {
 							className = "\"eventInfo1\"";
 						}
 						
-						document.getElementById("scheduled").innerHTML += 
+						document.getElementById("attending").innerHTML += 
 							'<div class=' + className + '>' +
 							'<p>' + events[i].description + '</p>' +
 							'<p>' + events[i].date + ' at ' + events[0].time + '</p>' +
@@ -176,6 +191,7 @@
 <div class="column">
 	<p class="colTitle">Your Scheduled Events:</p>
 	<div id="scheduled" class="userInfo">
+		
 	</div>
 	<br/><br/>
 	<button id="createEvent" type="button" onclick="window.location.href='./create.html'">
