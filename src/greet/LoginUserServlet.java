@@ -10,10 +10,10 @@ import java.sql.*;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-@WebServlet("/RegisterUserServlet")
-public class RegisterUserServlet extends HttpServlet {
+@WebServlet("/LoginUserServlet")
+public class LoginUserServlet extends HttpServlet {
     @Serial
-    private static final long serialVersionUID = 2L;
+    private static final long serialVersionUID = 3L;
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp)
@@ -23,13 +23,10 @@ public class RegisterUserServlet extends HttpServlet {
         Map<String, String> params = Util.queryToMap(s);
         String result;
 
-        if (!(params.containsKey("email") && params.containsKey("fname") &&
-            params.containsKey("lname") && params.containsKey("password"))) {
-            result = "{\"error\": \"request didn't include " +
-                     "email, fname, lname, or password\"}";
+        if (!(params.containsKey("email") && params.containsKey("password"))) {
+            result = "{\"error\": \"request didn't include email or password\"}";
         } else {
-            int id = registerUser(params.get("email"), params.get("fname"),
-                    params.get("lname"), params.get("password"));
+            int id = loginUser(params.get("email"), params.get("password"));
 
             if (id == -1) {
                 result = "{\"error\": \"could not register\"}";
@@ -44,8 +41,7 @@ public class RegisterUserServlet extends HttpServlet {
     }
 
     // returns id if successful, else -1
-    private int registerUser(String email, String fname,
-                                 String lname, String password) {
+    private int loginUser(String email, String password) {
         Connection conn = null;
         PreparedStatement ps = null;
         ResultSet rs = null;
@@ -56,33 +52,7 @@ public class RegisterUserServlet extends HttpServlet {
             ps.setString(1, email);
             rs = ps.executeQuery();
 
-            // if there is a result, email exists
-            if (rs.next())
-                return -1;
-
-            ps.close();
-            ps = conn.prepareStatement(
-                    "INSERT INTO user (email, fname, lname, password) " +
-                    "VALUES (?, ?, ?, ?)");
-            ps.setString(1, email);
-            ps.setString(2, fname);
-            ps.setString(3, lname);
-            ps.setString(4, password);
-            ps.executeUpdate();
-
-            ps.close();
-            ps = conn.prepareStatement(
-                    "SELECT * FROM user WHERE email = ? AND " +
-                    "fname = ? AND lname = ? AND password = ?");
-            ps.setString(1, email);
-            ps.setString(2, fname);
-            ps.setString(3, lname);
-            ps.setString(4, password);
-            rs.close();
-            rs = ps.executeQuery();
-
-            // if there is a result, return id
-            if (rs.next())
+            if (rs.next() && rs.getString("password").equals(password))
                 return rs.getInt("id");
             else
                 return -1;

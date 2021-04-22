@@ -45,8 +45,7 @@ public class DuplicateEmailServlet extends HttpServlet {
 
         try {
             conn = Util.getConnection();
-            ps = conn.prepareStatement("SELECT * FROM user " +
-                                       "WHERE email = ?");
+            ps = conn.prepareStatement("SELECT * FROM user WHERE email = ?");
             ps.setString(1, email);
             rs = ps.executeQuery();
 
