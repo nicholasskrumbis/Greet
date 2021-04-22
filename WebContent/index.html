@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="ISO-8859-1">
-<title>Insert title here</title>
+<title>Greet</title>
 
 <style>
 	body {
@@ -59,33 +59,28 @@
 	}
 	.eventInfo {
 		font-size: 20px;
-		line-height: 12px;
+		line-height: 16px;
 		border: solid;
 		border-width: 2px;
 		padding: 0px 15px;
 	}
 	.eventInfo1 {
 		font-size: 20px;
-		line-height: 12px;
+		line-height: 16px;
 		border: solid;
 		border-bottom-color: white;
 		border-width: 2px;
 		padding: 0px 15px;
 	}
-	.scheduledInfo {
-		font-size: 20px;
-		line-height: 12px;
-		border: solid;
-		border-width: 2px;
-		padding: 0px 15px;
+	.eventInfo p, .eventInfo1 p {
+		width: 90%;
 	}
-	.scheduledInfo1 {
-		font-size: 20px;
-		line-height: 12px;
-		border: solid;
-		border-bottom-color: white;
-		border-width: 2px;
-		padding: 0px 15px;
+	.expand {
+		cursor: pointer;
+		border: none;
+		float: right;
+		position: relative;
+		bottom: 40px;
 	}
 	#createEvent {
 		font-weight: bold;
@@ -94,8 +89,14 @@
 		border: none;
 		cursor: pointer;
 	}
+	input[type=submit] {
+		border: none;
+		padding: 5px;
+		font-weight: bold;
+	}
 </style>
 
+<script src="https://kit.fontawesome.com/1ba8ad1665.js" crossorigin="anonymous"></script>
 <script>
 	function getProfile() {
 		if (sessionStorage.getItem('UID') == null) {
@@ -125,16 +126,30 @@
 				else {						
 					for (i=0; i < events.length; i++) {
 						
-						var className = "\"scheduledInfo\"";
-						if (i == 0) {
-							className = "\"scheduledInfo1\"";
+						var className = "\"eventInfo\"";
+						if (i == 0 && events.length > 1) {
+							className = "\"eventInfo1\"";
 						}
+						
+						var id = events[i].event_id;
 						
 						document.getElementById("scheduled").innerHTML += 
 							'<div class=' + className + '>' +
 							'<p>' + events[i].description + '</p>' +
 							'<p>' + events[i].date + ' at ' + events[0].time + '</p>' +
-							'<p>Location: ' + events[i].location + '</p></div>';
+							'<p>Location: ' + events[i].location + '</p>' +
+							'<button class="expand" type="button" onclick="openAdd("' + id + '");">' +
+							'<i class="fas fa-angle-down fa-2x"></i>' +
+							'</button>' +
+							'<div id="' + id + '" style="margin-left:20px; display:none;" class="userInfo">' +
+							'<p style="font-size:18px;">Invite Guests:</p>' +
+							'<form id="' + id + 'Form" style="font-size:16px; margin-left:20px;" onsubmit="inviteGuest("' + id + '");">' +
+							'<label for="email">Email: </label>' +
+							'<input type="text" id="' + id + 'Email" name="email" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$" REQUIRED><br/><br/>' +
+							'<input type="submit" value="Invite"><br/>' +
+							'<div id="' + id + 'Link" class="userInfo" style="font-size:16px;">' +
+							'<p>After invititing guests, send them this link to allow them to accept:</p>' +
+							'<p><mark>' + window.location.hostname + '/Greet/accept.html/e104</mark></p></div></form></div>';
 					}
 				}
 			}
@@ -171,6 +186,36 @@
 		}
 		xhttp.send("UID=" + sessionStorage.getItem("UID"));
 	}
+	function openAdd(id) {
+		var e = document.getElementById(id);
+		if (e.style.display === "none") {
+			e.style.display = "";
+		}
+		else {
+			e.style.display = "none";
+		}
+	}
+	function inviteGuest(id) {
+		var email = document.getElementById(id + "Email").value;
+		const xhttp = new XMLHttpRequest();
+		xhttp.open("POST", "InviteGuestServlet", true);
+		xhttp.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+		xhttp.onreadystatechange = function() {
+			if (xhttp.readyState === 4) {
+				const jsonResponse = JSON.parse(this.responseText);
+
+				if (jsonResponse.error) {
+					alert("ERROR: Failed to invite guest");
+				}
+				else {						
+					document.getElementById(id + "Email").value = "";
+					alert("SUCCESS: Make sure to send the guest the accept link");
+				}
+			}
+		}
+		xhttp.send("event_id=" + id + "&email=" + email);
+	}
+	
 	function logout() {
 		sessionStorage.clear();
 		window.location.href = "./login.html";
