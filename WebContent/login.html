@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
 <meta charset="ISO-8859-1">
 <title>Greet - Login</title>
@@ -7,7 +7,7 @@
 <script src="https://kit.fontawesome.com/1ba8ad1665.js" crossorigin="anonymous"></script>
 <script>
 	function confirmPassword() {
-		if (document.getElementById("confirm-password").value != document.getElementById("password").value) {
+		if (document.getElementById("confirm-password").value !== document.getElementById("password").value) {
 			document.getElementById("confirm-password").setCustomValidity('Passwords must match');
 		}
 		else {
@@ -19,11 +19,12 @@
 		xhttp.open("POST", "DuplicateEmailServlet", true);
 		xhttp.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
 		xhttp.onreadystatechange = function() {
-			if (xhttp.readyState == 4) {
+			if (xhttp.readyState === 4) {
 				var jsonResponse = JSON.parse(this.responseText);
 				
-				if (jsonResponse.hasOwnProperty('Error')) {
-					document.getElementById("email").setCustomValidity('There is already an account associated with the email');
+				if (jsonResponse.error) {
+					document.getElementById("email").setCustomValidity(
+							'There is already an account associated with this email.');
 				}
 				else {
 					document.getElementById("email").setCustomValidity('');
@@ -37,10 +38,10 @@
 		xhttp.open("POST", "RegisterUserServlet", true);
 		xhttp.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
 		xhttp.onreadystatechange = function() {
-			if (xhttp.readyState == 4) {
+			if (xhttp.readyState === 4) {
 				var jsonResponse = JSON.parse(this.responseText);
 				
-				if (jsonResponse.hasOwnProperty('Error')) {
+				if (jsonResponse.error) {
 					document.getElementById("email").setCustomValidity('There is already an account associated with the email');
 				}
 				else {
@@ -61,7 +62,7 @@
 		xhttp.open("POST", "LoginUserServlet", true);
 		xhttp.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
 		xhttp.onreadystatechange = function() {
-			if (xhttp.readyState == 4) {
+			if (xhttp.readyState === 4) {
 				var jsonResponse = JSON.parse(this.responseText);
 				
 				if (jsonResponse.hasOwnProperty('Error')) {
@@ -81,9 +82,9 @@
 
 <style>
 	body {
-		font-family: Helvetica;
-		margin:0px;
-		padding:0px;
+		font-family: Helvetica,serif;
+		margin: 0;
+		padding: 0;
 	}
 	.navBar {
 		background-color: #499DF5;
@@ -93,13 +94,13 @@
 		color: #dbdbdb;
 		text-decoration: none;
 	}
-	.navRight {
-		float: right;
-		font-size: 13px;
-	}
-	.navRight:hover {
-		color: white;
-	}
+	/*.navRight {*/
+	/*	float: right;*/
+	/*	font-size: 13px;*/
+	/*}*/
+	/*.navRight:hover {*/
+	/*	color: white;*/
+	/*}*/
 	.column {
 		float: left;
 		width: 30%;
@@ -136,7 +137,7 @@
 		height:15px; 
 		width:100%; 
 		position:fixed; 
-		bottom:0px;
+		bottom: 0;
 	}
 </style>
 </head>
@@ -150,9 +151,9 @@
 <div class="column">
 	<p style="color:Grey; font-size:28px;" >Login</p>
 	<form name="login" onsubmit="loginUser(); return false;">
-		<p style="color:Grey; font-size:14px;">Email</p>
+		<label for="loginEmail" style="color:Grey; font-size:14px;">Email</label>
 		<input type="text" name="loginUsername" id="loginEmail" REQUIRED>
-		<p style="color:Grey; font-size:14px; padding-top:8px;">Password</p>
+		<label for="loginPassword" style="color:Grey; font-size:14px; padding-top:8px;">Password</label>
 		<input type="password" name="loginPassword" id="loginPassword" REQUIRED>
 	
 		<br/> <br/>
@@ -174,15 +175,15 @@
 <div class="column">
 	<p style="color:Grey; font-size:28px;">Sign Up</p>
 	<form name="signup" onsubmit="registerUser(); return false;">
-		<p style="color:Grey; font-size:14px; padding-top:8px;">First Name: </p>
+		<label for="fname" style="color:Grey; font-size:14px; padding-top:8px;">First Name: </label>
 		<input type="text" name="fname" id="fname" REQUIRED>
-		<p style="color:Grey; font-size:14px; padding-top:8px;">Last Name: </p>
+		<label for="lname" style="color:Grey; font-size:14px; padding-top:8px;">Last Name: </label>
 		<input type="text" name="lname" id="lname" REQUIRED>
-		<p style="color:Grey; font-size:14px;">Email: </p>
+		<label for="email" style="color:Grey; font-size:14px;">Email: </label>
 		<input type="email" onblur="duplicateEmail();" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$" name="email" id="email" REQUIRED>
-		<p style="color:Grey; font-size:14px; padding-top:8px;">Password: </p>
+		<label for="password" style="color:Grey; font-size:14px; padding-top:8px;">Password: </label>
 		<input type="password" name="password" id="password" oninput="confirmPassword()" REQUIRED>
-		<p style="color:Grey; font-size:14px; padding-top:8px;">Confirm Password: </p>
+		<label for="confirm-password" style="color:Grey; font-size:14px; padding-top:8px;">Confirm Password: </label>
 		<input type="password" name="confirm-password" id="confirm-password" oninput="confirmPassword()" REQUIRED>
 		
 		<br/><br/>

@@ -6,6 +6,7 @@ CREATE TABLE user
 (
     id       INT PRIMARY KEY NOT NULL UNIQUE AUTO_INCREMENT,
     email    VARCHAR(50)     NOT NULL UNIQUE,
-    username VARCHAR(50)              UNIQUE,
+    fname    VARCHAR(50)     NOT NULL,
+    lname    VARCHAR(50)     NOT NULL,
     password VARCHAR(50)
 );
