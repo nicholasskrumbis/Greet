@@ -47,21 +47,115 @@
 	}
 	.column {
 		float: left;
-		width: 30%;
+		width: 40%;
 		padding: 2% 5%;
 	}
 	.colTitle {
 		font-size: 24px;
 	}
+	.userInfo {
+		font-size: 20px;
+		line-height: 12px;
+	}
+	.eventInfo {
+		font-size: 20px;
+		line-height: 12px;
+		border: solid;
+		border-width: 2px;
+		padding: 0px 15px;
+	}
+	.eventInfo1 {
+		font-size: 20px;
+		line-height: 12px;
+		border: solid;
+		border-bottom-color: white;
+		border-width: 2px;
+		padding: 0px 15px;
+	}
+	#createEvent {
+		font-weight: bold;
+		padding: 10px;
+		font-size: 16px;
+		border: none;
+		cursor: pointer;
+	}
 </style>
 
 <script>
-	function checkLogin() {
+	function getProfile() {
 		if (sessionStorage.getItem('UID') == null) {
 			window.location.href = "./login.html";
 		}
+		else {
+			//getScheduledEvents();
+			//getAttendingEvents();
+			
+			document.getElementById("fname").innerHTML += sessionStorage.getItem("fname");
+			document.getElementById("lname").innerHTML += sessionStorage.getItem("lname");
+			document.getElementById("email").innerHTML += sessionStorage.getItem("email");
+			
+		}
 	}
-	
+	function getScheduledEvents() {
+		const xhttp = new XMLHttpRequest();
+		xhttp.open("POST", "GetScheduledEventsServlet", true);
+		xhttp.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+		xhttp.onreadystatechange = function() {
+			if (xhttp.readyState === 4) {
+				const events = JSON.parse(this.responseText);
+
+				if (events.error || events.length < 1) {
+					document.getElementById("scheduled").innerHTML = "You have no scheduled events.";
+				}
+				else {						
+					for (i=0; i < events.length; i++) {
+						
+						var className = "\"eventInfo\"";
+						if (i == 0) {
+							className = "\"eventInfo1\"";
+						}
+						
+						document.getElementById("scheduled").innerHTML += 
+							'<div class=' + className + '>' +
+							'<p>' + events[i].description + '</p>' +
+							'<p>' + events[i].date + ' at ' + events[0].time + '</p>' +
+							'<p>Location: ' + events[i].location + '</p></div>';
+					}
+				}
+			}
+		}
+		xhttp.send("UID=" + sessionStorage.getItem("UID"));
+	}
+	function getAttendingEvents() {
+		const xhttp = new XMLHttpRequest();
+		xhttp.open("POST", "GetAttendingEventsServlet", true);
+		xhttp.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+		xhttp.onreadystatechange = function() {
+			if (xhttp.readyState === 4) {
+				const events = JSON.parse(this.responseText);
+
+				if (events.error || events.length < 1) {
+					document.getElementById("scheduled").innerHTML = "You have no scheduled events.";
+				}
+				else {						
+					for (i=0; i < events.length; i++) {
+						
+						var className = "\"eventInfo\"";
+						if (i == 0) {
+							className = "\"eventInfo1\"";
+						}
+						
+						document.getElementById("scheduled").innerHTML += 
+							'<div class=' + className + '>' +
+							'<p>' + events[i].description + '</p>' +
+							'<p>' + events[i].date + ' at ' + events[0].time + '</p>' +
+							'<p>Location: ' + events[i].location + '</p></div>';
+					}
+				}
+			}
+		}
+		xhttp.send("UID=" + sessionStorage.getItem("UID"));
+	}
 	function logout() {
 		sessionStorage.clear();
 		window.location.href = "./login.html";
@@ -69,7 +163,7 @@
 </script>
 
 </head>
-<body onload="checkLogin();">
+<body onload="getProfile();">
 
 <div class="navBar">
 	<a style="color:#ffffff" href="./index.html"><b>Greet</b></a>
@@ -81,6 +175,25 @@
 
 <div class="column">
 	<p class="colTitle">Your Scheduled Events:</p>
+	<div id="scheduled" class="userInfo">
+	</div>
+	<br/><br/>
+	<button id="createEvent" type="button" onclick="window.location.href='./create.html'">
+		+ Create Event
+	</button>
+	<br/><br/>
+	<p class="colTitle">Events You Are Attending:</p>
+	<div id="attending" class="userInfo">
+	</div>
+	<br/><br/>
+</div>
+
+<div class="column">
+	<p class="colTitle" style="text-align:center">About You</p>
+	<br/>
+	<p id="fname" class="userInfo">First Name: </p>
+	<p id="lname" class="userInfo">Last Name: </p>
+	<p id="email" class="userInfo">Email: </p>
 </div>
 
 </body>

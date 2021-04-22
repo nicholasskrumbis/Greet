@@ -48,6 +48,8 @@
 					document.getElementById("email").setCustomValidity('');
 					sessionStorage.setItem("email", jsonResponse.email);
 					sessionStorage.setItem("UID", jsonResponse.UID);
+					sessionStorage.setItem("fname", jsonResponse.fname);
+					sessionStorage.setItem("lname", jsonResponse.lname);
 					window.location.href = "./index.html";
 				}
 			}
@@ -71,6 +73,8 @@
 				else {
 					sessionStorage.setItem("email", jsonResponse.email);
 					sessionStorage.setItem("UID", jsonResponse.UID);
+					sessionStorage.setItem("fname", jsonResponse.fname);
+					sessionStorage.setItem("lname", jsonResponse.lname);
 					window.location.href = "./index.html";
 				}
 			}
