@@ -106,6 +106,13 @@
 			//getScheduledEvents();
 			//getAttendingEvents();
 			
+			var query = window.location.search.substring(1);
+			var vars = query.split("&");
+			for (i=0; i < vars.length; i++) {
+				var pair = vars[i].split("=");
+				console.log(pair[0]);
+			}
+			
 			document.getElementById("fname").innerHTML += sessionStorage.getItem("fname");
 			document.getElementById("lname").innerHTML += sessionStorage.getItem("lname");
 			document.getElementById("email").innerHTML += sessionStorage.getItem("email");
@@ -149,7 +156,7 @@
 							'<input type="submit" value="Invite"><br/>' +
 							'<div id="' + id + 'Link" class="userInfo" style="font-size:16px;">' +
 							'<p>After invititing guests, send them this link to allow them to accept:</p>' +
-							'<p><mark>' + window.location.hostname + '/Greet/accept.html/e104</mark></p></div></form></div>';
+							'<p><mark>' + window.location.hostname + '/Greet/accept.html?event_id=' + id + '</mark></p></div></form></div>';
 					}
 				}
 			}
