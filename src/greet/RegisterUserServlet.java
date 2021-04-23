@@ -1,5 +1,7 @@
 package greet;
 
+import com.google.gson.Gson;
+
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -28,16 +30,13 @@ public class RegisterUserServlet extends HttpServlet {
             result = "{\"error\": \"request didn't include " +
                      "email, fname, lname, or password\"}";
         } else {
-            int id = registerUser(params.get("email"), params.get("fname"),
+            User user = registerUser(params.get("email"), params.get("fname"),
                     params.get("lname"), params.get("password"));
 
-            if (id == -1) {
+            if (user.UID == -1) {
                 result = "{\"error\": \"could not register\"}";
             } else {
-                result = "{\"email\": \"" + params.get("email") + "\", " +
-                         "\"UID\": " + id + ", " +
-                		 "\"fname\": \"" + params.get("fname") + "\", " +
-                         "\"lname\": \"" + params.get("lname") + "\"}";
+                result = new Gson().toJson(user);
             }
         }
 
@@ -45,9 +44,26 @@ public class RegisterUserServlet extends HttpServlet {
         resp.getWriter().println(result);
     }
 
-    // returns id if successful, else -1
-    private int registerUser(String email, String fname,
-                                 String lname, String password) {
+    private static class User {
+        int UID;
+        String fname;
+        String lname;
+        String email;
+
+        public User() {
+            UID = -1;
+        }
+
+        public User(int id, String f, String l, String e) {
+            UID = id;
+            fname = f;
+            lname = l;
+            email = e;
+        }
+    }
+
+    private User registerUser(String email, String fname,
+                              String lname, String password) {
         Connection conn = null;
         PreparedStatement ps = null;
         ResultSet rs = null;
@@ -60,7 +76,7 @@ public class RegisterUserServlet extends HttpServlet {
 
             // if there is a result, email exists
             if (rs.next())
-                return -1;
+                return new User();
 
             ps.close();
             ps = conn.prepareStatement(
@@ -83,11 +99,11 @@ public class RegisterUserServlet extends HttpServlet {
             rs.close();
             rs = ps.executeQuery();
 
-            // if there is a result, return id
+            // if there is a result, return user
             if (rs.next())
-                return rs.getInt("id");
+                return new User(rs.getInt("id"), fname, lname, email);
             else
-                return -1;
+                return new User();
         } catch (SQLException | ClassNotFoundException e) {
             e.printStackTrace();
         } finally {
@@ -100,6 +116,6 @@ public class RegisterUserServlet extends HttpServlet {
             }
         }
 
-        return -1;
+        return new User();
     }
 }

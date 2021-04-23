@@ -1,5 +1,7 @@
 package greet;
 
+import com.google.gson.Gson;
+
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -28,13 +30,10 @@ public class LoginUserServlet extends HttpServlet {
         } else {
             User user = loginUser(params.get("email"), params.get("password"));
 
-            if (user.getUID() == -1) {
+            if (user.UID == -1) {
                 result = "{\"error\": \"could not register\"}";
             } else {
-                result = "{\"email\": \"" + params.get("email") + "\", " +
-                         "\"UID\": " + user.getUID() + ", " +
-                		 "\"fname\": \"" + user.getFname() + "\", " +
-                         "\"lname\": \"" + user.getLname() + "\"}";
+                result = new Gson().toJson(user);
             }
         }
 
@@ -42,7 +41,24 @@ public class LoginUserServlet extends HttpServlet {
         resp.getWriter().println(result);
     }
 
-    // returns id if successful, else -1
+    private static class User {
+        int UID;
+        String fname;
+        String lname;
+        String email;
+
+        public User() {
+            UID = -1;
+        }
+
+        public User(int id, String f, String l, String e) {
+            UID = id;
+            fname = f;
+            lname = l;
+            email = e;
+        }
+    }
+
     private User loginUser(String email, String password) {
         Connection conn = null;
         PreparedStatement ps = null;
@@ -55,7 +71,10 @@ public class LoginUserServlet extends HttpServlet {
             rs = ps.executeQuery();
 
             if (rs.next() && rs.getString("password").equals(password))
-                return new User(rs.getInt("id"), rs.getString("fname"), rs.getString("lname"));
+                return new User(rs.getInt("id"),
+                        rs.getString("fname"),
+                        rs.getString("lname"),
+                        email);
             else
                 return new User();
         } catch (SQLException | ClassNotFoundException e) {
@@ -72,29 +91,4 @@ public class LoginUserServlet extends HttpServlet {
 
         return new User();
     }
-}
-
-class User {
-	private int UID;
-	private String fname;
-	private String lname;
-	
-	User() {
-		UID = -1;
-	}
-	User(int id, String f, String l) {
-		UID = id;
-		fname = f;
-		lname = l;
-	}
-	
-	public int getUID() {
-		return UID;
-	}
-	public String getFname() {
-		return fname;
-	}
-	public String getLname() {
-		return lname;
-	}
 }
