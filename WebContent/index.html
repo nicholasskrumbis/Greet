@@ -117,7 +117,7 @@
 			
 			var query = window.location.search.substring(1);
 			var vars = query.split("&");
-			for (i=0; i < vars.length; i++) {
+			for (var i = 0; i < vars.length; i++) {
 				var pair = vars[i].split("=");
 				console.log(pair[0]);
 			}
@@ -140,15 +140,27 @@
 					document.getElementById("scheduled").innerHTML = "You have no scheduled events.";
 				}
 				else {						
-					for (i=0; i < events.length; i++) {
+					for (var i = 0; i < events.length; i++) {
 						
 						var className = "\"eventInfo\"";
-						if (i == 0 && events.length > 1) {
+						if (i === 0 && events.length > 1) {
 							className = "\"eventInfo1\"";
 						}
 						
 						var id = events[i].event_id;
-						
+
+						/**
+						 * hi aviv here, i did something similar to the below in my hw 4,
+						 * but i found that it was a little easier to use strings but
+						 * with backticks (`asdf`). this allows you to inject variables
+						 * directly into the string, so instead of:
+						 * 		'<div class=' + className + '>' (with single quotes)
+						 * you'd have something like:
+						 * 		`<div class=${className}>` (with backticks)
+						 * this is just a style thing tho, so up to you if you want to
+						 * use it or not!
+						 */
+
 						document.getElementById("scheduled").innerHTML += 
 							'<div class=' + className + '>' +
 							'<p>' + events[i].description + '</p>' +
@@ -187,7 +199,7 @@
 					for (i=0; i < events.length; i++) {
 						
 						var className = "\"eventInfo\"";
-						if (i == 0 && events.length > 1) {
+						if (i === 0 && events.length > 1) {
 							className = "\"eventInfo1\"";
 						}
 						
@@ -259,7 +271,7 @@
 			<div id="e104" style="margin-left:20px; display:none;" class="userInfo">
 				<p style="font-size:18px;">Invite Guests:</p>
 				<form id="e104Form" style="font-size:16px; margin-left:20px;" onsubmit="addGuest('e104'); return false;">
-					<label for="email">Email: </label>
+					<label for="e104Email">Email: </label>
 					<input type="text" id="e104Email" name="email" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$" REQUIRED><br/><br/>
 					<input type="submit" value="Invite"><br/>
 				</form>
