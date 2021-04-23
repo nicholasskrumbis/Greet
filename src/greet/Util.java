@@ -8,11 +8,16 @@ import java.util.Map;
 
 public class Util {
 
+    public static final String DB_URL = "jdbc:mysql://localhost:3306/greet";
+    public static final String DB_USER = "root";
+    public static final String DB_PASS = "root";
+
+    public static final int QR_SIZE = 128;
+
     public static Connection getConnection()
             throws SQLException, ClassNotFoundException {
         Class.forName("com.mysql.cj.jdbc.Driver");
-        return DriverManager.getConnection("jdbc:mysql://localhost:3306/greet",
-                "root", "root");
+        return DriverManager.getConnection(DB_URL, DB_USER, DB_PASS);
     }
 
     public static Map<String, String> queryToMap(String query) {

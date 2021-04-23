@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 @WebServlet("/UpdateGuestAttendanceServlet")
 public class UpdateGuestAttendanceServlet extends HttpServlet {
     @Serial
-    private static final long serialVersionUID = 8L;
+    private static final long serialVersionUID = 7L;
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp)
