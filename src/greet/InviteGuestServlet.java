@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 @WebServlet("/InviteGuestServlet")
 public class InviteGuestServlet extends HttpServlet {
     @Serial
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 8L;
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp)
@@ -46,8 +46,9 @@ public class InviteGuestServlet extends HttpServlet {
         try {
             conn = Util.getConnection();
             ps = conn.prepareStatement(
-                    "INSERT INTO attendance (event_id, fname, lname, email) " +
-                    "VALUES (?, NULL, NULL, ?)");
+                    "INSERT INTO attendance " +
+                    "(event_id, qr_id, fname, lname, email) " +
+                    "VALUES (?, NULL, NULL, NULL, ?)");
             ps.setInt(1, eventId);
             ps.setString(2, email);
             int rowsAffected = ps.executeUpdate();

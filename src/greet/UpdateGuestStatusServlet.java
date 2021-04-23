@@ -1,9 +1,16 @@
 package greet;
 
+import com.google.zxing.BarcodeFormat;
+import com.google.zxing.MultiFormatWriter;
+import com.google.zxing.WriterException;
+import com.google.zxing.common.BitMatrix;
+import com.google.zxing.client.j2se.MatrixToImageWriter;
+
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.File;
 import java.io.IOException;
 import java.io.Serial;
 import java.sql.Connection;
@@ -34,7 +41,7 @@ public class UpdateGuestStatusServlet extends HttpServlet {
             result = "{\"error\": \"request didn't include " +
                      "event_id, email, fname, or lname\"}";
         } else if (!updateGuest(Integer.parseInt(params.get("event_id")),
-                params.get("email"), params.get("fname"), params.get("lname"))){
+                params.get("email"), params.get("fname"), params.get("lname"))) {
             result = "{\"error\": \"could not update guest status\"}";
         } else {
             result = "{}";
@@ -45,23 +52,30 @@ public class UpdateGuestStatusServlet extends HttpServlet {
     }
 
     // returns true if successful
-    private boolean updateGuest(int eventId, String email, String fname, String lname) {
+    private boolean updateGuest(int eventId, String email,
+                                String fname, String lname) {
         Connection conn = null;
         PreparedStatement ps = null;
 
         try {
             conn = Util.getConnection();
+
+            int qrId = createQR(eventId, email);
+
             ps = conn.prepareStatement(
-                    "UPDATE attendance SET fname = ?, lname = ?, status = 1 " +
+                    "UPDATE attendance " +
+                    "SET qr_id = ?, fname = ?, lname = ?, status = 1 " +
                     "WHERE event_id = ? AND email = ?");
-            ps.setString(1, fname);
-            ps.setString(2, lname);
-            ps.setInt(3, eventId);
-            ps.setString(4, email);
+            ps.setInt(1, qrId);
+            ps.setString(2, fname);
+            ps.setString(3, lname);
+            ps.setInt(4, eventId);
+            ps.setString(5, email);
             int rowsAffected = ps.executeUpdate();
 
             return rowsAffected > 0;
-        } catch (SQLException | ClassNotFoundException e) {
+        } catch (SQLException | ClassNotFoundException |
+                WriterException | IOException e) {
             e.printStackTrace();
         } finally {
             try {
@@ -73,5 +87,22 @@ public class UpdateGuestStatusServlet extends HttpServlet {
         }
 
         return false;
+    }
+
+    private static int createQR(int eventId, String email)
+            throws WriterException, IOException {
+        // feel free to change this link, not sure what it should actually be
+        String link = "http://localhost:8080/greet/checkin?eventId=%d&email=%s";
+        String data = String.format(link, eventId, email);
+
+        int qrId = (eventId + email).hashCode();
+
+        BitMatrix matrix = new MultiFormatWriter().encode(data,
+                BarcodeFormat.QR_CODE, Util.QR_SIZE, Util.QR_SIZE);
+
+        MatrixToImageWriter.writeToPath(matrix, "png",
+                new File("qrs/" + qrId + ".png").toPath());
+
+        return qrId;
     }
 }

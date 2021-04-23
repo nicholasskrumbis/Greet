@@ -26,6 +26,7 @@ CREATE TABLE attendance
 (
     id         INT PRIMARY KEY NOT NULL UNIQUE AUTO_INCREMENT,
     event_id   INT             NOT NULL,
+    qr_id      INT             NULL,
     fname      VARCHAR(50)     NULL,
     lname      VARCHAR(50)     NULL,
     email      VARCHAR(50)     NOT NULL,

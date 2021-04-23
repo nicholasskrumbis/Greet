@@ -16,11 +16,8 @@ import java.util.stream.Collectors;
 @WebServlet("/CreateEventServlet")
 public class CreateEventServlet extends HttpServlet {
     @Serial
-    private static final long serialVersionUID = 7L;
+    private static final long serialVersionUID = 9L;
 
-    // important: only call this servlet if the user is coming
-    // if they're not, don't call this. it's fine since the default
-    // status is no anyway
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp)
             throws IOException {
