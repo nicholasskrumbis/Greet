@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.Serial;
 import java.sql.*;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -25,8 +26,8 @@ public class RegisterUserServlet extends HttpServlet {
         Map<String, String> params = Util.queryToMap(s);
         String result;
 
-        if (!(params.containsKey("email") && params.containsKey("fname") &&
-            params.containsKey("lname") && params.containsKey("password"))) {
+        if (!params.keySet().containsAll(Arrays.asList(
+                        "email", "fname", "lname", "password"))) {
             result = "{\"error\": \"request didn't include " +
                      "email, fname, lname, or password\"}";
         } else {
@@ -44,6 +45,7 @@ public class RegisterUserServlet extends HttpServlet {
         resp.getWriter().println(result);
     }
 
+    @SuppressWarnings("unused")
     private static class User {
         int UID;
         String fname;

@@ -112,9 +112,10 @@
 			window.location.href = "./login.html";
 		}
 		else {
-			//getScheduledEvents();
-			//getAttendingEvents();
-			
+			getScheduledEvents();
+			getAttendingEvents();
+
+			// is this for something later? not sure if we need this
 			var query = window.location.search.substring(1);
 			var vars = query.split("&");
 			for (var i = 0; i < vars.length; i++) {
@@ -146,8 +147,9 @@
 						if (i === 0 && events.length > 1) {
 							className = "\"eventInfo1\"";
 						}
-						
-						var id = events[i].event_id;
+
+						console.log(events)
+						var id = events[i].eventId;
 
 						/**
 						 * hi aviv here, i did something similar to the below in my hw 4,
@@ -164,14 +166,14 @@
 						document.getElementById("scheduled").innerHTML += 
 							'<div class=' + className + '>' +
 							'<p>' + events[i].description + '</p>' +
-							'<p>' + events[i].date + ' at ' + events[0].time + '</p>' +
+							'<p>' + events[i].date + ' at ' + events[i].time + '</p>' +
 							'<p>Location: ' + events[i].location + '</p>' +
 							'<button class="expand" type="button" onclick="openAdd("' + id + '");">' +
 							'<i class="fas fa-angle-down fa-2x"></i>' +
 							'</button>' +
 							'<div id="' + id + '" style="margin-left:20px; display:none;" class="userInfo">' +
 							'<p style="font-size:18px;">Invite Guests:</p>' +
-							'<form id="' + id + 'Form" style="font-size:16px; margin-left:20px;" onsubmit="inviteGuest("' + id + '");">' +
+							'<form id="' + id + 'Form" style="font-size:16px; margin-left:20px;" onsubmit="inviteGuest(' + id + ');">' +
 							'<label for="email">Email: </label>' +
 							'<input type="text" id="' + id + 'Email" name="email" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$" REQUIRED><br/><br/>' +
 							'<input type="submit" value="Invite"><br/>' +
@@ -196,7 +198,7 @@
 					document.getElementById("attending").innerHTML = "You are attending no events.";
 				}
 				else {						
-					for (i=0; i < events.length; i++) {
+					for (var i = 0; i < events.length; i++) {
 						
 						var className = "\"eventInfo\"";
 						if (i === 0 && events.length > 1) {

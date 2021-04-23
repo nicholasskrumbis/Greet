@@ -41,9 +41,10 @@ public class LoginUserServlet extends HttpServlet {
         resp.getWriter().println(result);
     }
 
+    @SuppressWarnings("unused")
     private static class User {
         int UID;
-        String fname;
+		String fname;
         String lname;
         String email;
 
