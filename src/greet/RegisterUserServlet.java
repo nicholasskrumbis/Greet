@@ -35,7 +35,9 @@ public class RegisterUserServlet extends HttpServlet {
                 result = "{\"error\": \"could not register\"}";
             } else {
                 result = "{\"email\": \"" + params.get("email") + "\", " +
-                         "\"UID\": " + id + "}";
+                         "\"UID\": " + id + ", " +
+                		 "\"fname\": \"" + params.get("fname") + "\", " +
+                         "\"lname\": \"" + params.get("lname") + "\"}";
             }
         }
 

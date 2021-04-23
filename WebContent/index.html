@@ -2,18 +2,292 @@
 <html lang="en">
 <head>
 <meta charset="ISO-8859-1">
-<title>Insert title here</title>
+<title>Greet</title>
 
+<style>
+	body {
+		font-family: Helvetica,serif;
+		margin: 0;
+		padding: 0;
+	}
+	.navBar {
+		background-color: #499DF5;
+		padding: 15px;
+	}
+	.navBar a {
+		color: #dbdbdb;
+		text-decoration: none;
+	}
+	.navRight {
+		float: right;
+		font-size: 13px;
+		padding: 0px 5px 0px 15px;
+	}
+	.navRight:hover {
+		color: white;
+	}
+	/*
+	#navSelected {
+		position:relative; 
+		bottom:5px; 
+		padding: 5px; 
+		border-style:solid; 
+		border-radius:5px; 
+		border-width:1.5px; 
+		border-color:white
+	}
+	*/
+	#logoutButton {
+		padding: 0px 5px 0px 15px;
+		color: white;
+		background-color: #499DF5;
+		border: none;
+		cursor: pointer;
+	}
+	#logoutButton:hover {
+		border-style:solid; 
+		border-radius:5px; 
+		border-width:1.5px; 
+		border-color:white;
+		padding: 5px;
+		position:relative;
+		bottom: 6px;
+		left: 1px;
+	}
+	.column {
+		float: left;
+		width: 40%;
+		padding: 2% 5%;
+	}
+	.colTitle {
+		font-size: 24px;
+	}
+	.userInfo {
+		font-size: 20px;
+		line-height: 12px;
+	}
+	.eventInfo {
+		font-size: 20px;
+		line-height: 16px;
+		border: solid;
+		border-width: 2px;
+		padding: 0px 15px;
+	}
+	.eventInfo1 {
+		font-size: 20px;
+		line-height: 16px;
+		border: solid;
+		border-bottom-color: white;
+		border-width: 2px;
+		padding: 0px 15px;
+	}
+	.eventInfo p, .eventInfo1 p {
+		width: 90%;
+	}
+	.expand {
+		cursor: pointer;
+		border: none;
+		float: right;
+		position: relative;
+		bottom: 40px;
+	}
+	#createEvent {
+		font-weight: bold;
+		padding: 10px;
+		font-size: 16px;
+		border: none;
+		cursor: pointer;
+	}
+	input[type=submit] {
+		border: none;
+		padding: 5px;
+		font-weight: bold;
+	}
+</style>
+
+<script src="https://kit.fontawesome.com/1ba8ad1665.js" crossorigin="anonymous"></script>
 <script>
-	function checkLogin() {
+	function getProfile() {
 		if (sessionStorage.getItem('UID') == null) {
 			window.location.href = "./login.html";
 		}
+		else {
+			//getScheduledEvents();
+			//getAttendingEvents();
+			
+			var query = window.location.search.substring(1);
+			var vars = query.split("&");
+			for (i=0; i < vars.length; i++) {
+				var pair = vars[i].split("=");
+				console.log(pair[0]);
+			}
+			
+			document.getElementById("fname").innerHTML += sessionStorage.getItem("fname");
+			document.getElementById("lname").innerHTML += sessionStorage.getItem("lname");
+			document.getElementById("email").innerHTML += sessionStorage.getItem("email");
+			
+		}
+	}
+	function getScheduledEvents() {
+		const xhttp = new XMLHttpRequest();
+		xhttp.open("POST", "GetScheduledEventsServlet", true);
+		xhttp.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+		xhttp.onreadystatechange = function() {
+			if (xhttp.readyState === 4) {
+				const events = JSON.parse(this.responseText);
+
+				if (events.error || events.length < 1) {
+					document.getElementById("scheduled").innerHTML = "You have no scheduled events.";
+				}
+				else {						
+					for (i=0; i < events.length; i++) {
+						
+						var className = "\"eventInfo\"";
+						if (i == 0 && events.length > 1) {
+							className = "\"eventInfo1\"";
+						}
+						
+						var id = events[i].event_id;
+						
+						document.getElementById("scheduled").innerHTML += 
+							'<div class=' + className + '>' +
+							'<p>' + events[i].description + '</p>' +
+							'<p>' + events[i].date + ' at ' + events[0].time + '</p>' +
+							'<p>Location: ' + events[i].location + '</p>' +
+							'<button class="expand" type="button" onclick="openAdd("' + id + '");">' +
+							'<i class="fas fa-angle-down fa-2x"></i>' +
+							'</button>' +
+							'<div id="' + id + '" style="margin-left:20px; display:none;" class="userInfo">' +
+							'<p style="font-size:18px;">Invite Guests:</p>' +
+							'<form id="' + id + 'Form" style="font-size:16px; margin-left:20px;" onsubmit="inviteGuest("' + id + '");">' +
+							'<label for="email">Email: </label>' +
+							'<input type="text" id="' + id + 'Email" name="email" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$" REQUIRED><br/><br/>' +
+							'<input type="submit" value="Invite"><br/>' +
+							'<div id="' + id + 'Link" class="userInfo" style="font-size:16px;">' +
+							'<p>After inviting guests, send them this link to allow them to accept:</p>' +
+							'<p><mark>' + window.location.hostname + '/Greet/accept.html?event_id=' + id + '</mark></p></div></form></div>';
+					}
+				}
+			}
+		}
+		xhttp.send("UID=" + sessionStorage.getItem("UID"));
+	}
+	function getAttendingEvents() {
+		const xhttp = new XMLHttpRequest();
+		xhttp.open("POST", "GetAttendingEventsServlet", true);
+		xhttp.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+		xhttp.onreadystatechange = function() {
+			if (xhttp.readyState === 4) {
+				const events = JSON.parse(this.responseText);
+
+				if (events.error || events.length < 1) {
+					document.getElementById("attending").innerHTML = "You are attending no events.";
+				}
+				else {						
+					for (i=0; i < events.length; i++) {
+						
+						var className = "\"eventInfo\"";
+						if (i == 0 && events.length > 1) {
+							className = "\"eventInfo1\"";
+						}
+						
+						document.getElementById("attending").innerHTML += 
+							'<div class=' + className + '>' +
+							'<p>' + events[i].description + '</p>' +
+							'<p>' + events[i].date + ' at ' + events[0].time + '</p>' +
+							'<p>Location: ' + events[i].location + '</p></div>';
+					}
+				}
+			}
+		}
+		xhttp.send("UID=" + sessionStorage.getItem("UID"));
+	}
+	function openAdd(id) {
+		var e = document.getElementById(id);
+		if (e.style.display === "none") {
+			e.style.display = "";
+		}
+		else {
+			e.style.display = "none";
+		}
+	}
+	function inviteGuest(id) {
+		var email = document.getElementById(id + "Email").value;
+		const xhttp = new XMLHttpRequest();
+		xhttp.open("POST", "InviteGuestServlet", true);
+		xhttp.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+		xhttp.onreadystatechange = function() {
+			if (xhttp.readyState === 4) {
+				const jsonResponse = JSON.parse(this.responseText);
+
+				if (jsonResponse.error) {
+					alert("ERROR: Failed to invite guest");
+				}
+				else {						
+					document.getElementById(id + "Email").value = "";
+					alert("SUCCESS: Make sure to send the guest the accept link");
+				}
+			}
+		}
+		xhttp.send("event_id=" + id + "&email=" + email);
+	}
+	
+	function logout() {
+		sessionStorage.clear();
+		window.location.href = "./login.html";
 	}
 </script>
 
 </head>
-<body onload="checkLogin();">
+<body onload="getProfile();">
+
+<div class="navBar">
+	<a style="color:#ffffff" href="./index.html"><b>Greet</b></a>
+	<button class="navRight" id="logoutButton" onclick="logout();">Logout</button>
+</div>
+
+<div class="column">
+	<p class="colTitle">Your Scheduled Events:</p>
+	<div id="scheduled" class="userInfo">
+		<div class='eventInfo'>
+			<p>Nick's Valorant Tournament</p>
+			<p>4/22/21 at 10PM</p>
+			<p>Location: The Colosseum</p>
+			<button class="expand" type="button" onclick="openAdd('e104');">
+				<i class="fas fa-angle-down fa-2x"></i>
+			</button>
+			<div id="e104" style="margin-left:20px; display:none;" class="userInfo">
+				<p style="font-size:18px;">Invite Guests:</p>
+				<form id="e104Form" style="font-size:16px; margin-left:20px;" onsubmit="addGuest('e104'); return false;">
+					<label for="email">Email: </label>
+					<input type="text" id="e104Email" name="email" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$" REQUIRED><br/><br/>
+					<input type="submit" value="Invite"><br/>
+				</form>
+				<div id="e104Link" class="userInfo" style="font-size:16px;">
+					<p>After invititing guests, send them this link to allow them to accept:</p>
+					<p><mark>window.location.hostname/Greet/accept.html?event_id=e104</mark></p>
+				</div>
+			</div>
+		</div>
+	</div>
+	<br/><br/>
+	<button id="createEvent" type="button" onclick="window.location.href='./create.html'">
+		+ Create Event
+	</button>
+	<br/><br/>
+	<p class="colTitle">Events You Are Attending:</p>
+	<div id="attending" class="userInfo">
+	</div>
+	<br/><br/>
+</div>
+
+<div class="column">
+	<p class="colTitle" style="text-align:center">About You</p>
+	<br/>
+	<p id="fname" class="userInfo">First Name: </p>
+	<p id="lname" class="userInfo">Last Name: </p>
+	<p id="email" class="userInfo">Email: </p>
+</div>
 
 </body>
 </html>

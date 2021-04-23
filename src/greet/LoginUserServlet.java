@@ -26,13 +26,15 @@ public class LoginUserServlet extends HttpServlet {
         if (!(params.containsKey("email") && params.containsKey("password"))) {
             result = "{\"error\": \"request didn't include email or password\"}";
         } else {
-            int id = loginUser(params.get("email"), params.get("password"));
+            User user = loginUser(params.get("email"), params.get("password"));
 
-            if (id == -1) {
+            if (user.getUID() == -1) {
                 result = "{\"error\": \"could not register\"}";
             } else {
                 result = "{\"email\": \"" + params.get("email") + "\", " +
-                         "\"UID\": " + id + "}";
+                         "\"UID\": " + user.getUID() + ", " +
+                		 "\"fname\": \"" + user.getFname() + "\", " +
+                         "\"lname\": \"" + user.getLname() + "\"}";
             }
         }
 
@@ -41,7 +43,7 @@ public class LoginUserServlet extends HttpServlet {
     }
 
     // returns id if successful, else -1
-    private int loginUser(String email, String password) {
+    private User loginUser(String email, String password) {
         Connection conn = null;
         PreparedStatement ps = null;
         ResultSet rs = null;
@@ -53,9 +55,9 @@ public class LoginUserServlet extends HttpServlet {
             rs = ps.executeQuery();
 
             if (rs.next() && rs.getString("password").equals(password))
-                return rs.getInt("id");
+                return new User(rs.getInt("id"), rs.getString("fname"), rs.getString("lname"));
             else
-                return -1;
+                return new User();
         } catch (SQLException | ClassNotFoundException e) {
             e.printStackTrace();
         } finally {
@@ -68,6 +70,31 @@ public class LoginUserServlet extends HttpServlet {
             }
         }
 
-        return -1;
+        return new User();
     }
+}
+
+class User {
+	private int UID;
+	private String fname;
+	private String lname;
+	
+	User() {
+		UID = -1;
+	}
+	User(int id, String f, String l) {
+		UID = id;
+		fname = f;
+		lname = l;
+	}
+	
+	public int getUID() {
+		return UID;
+	}
+	public String getFname() {
+		return fname;
+	}
+	public String getLname() {
+		return lname;
+	}
 }
