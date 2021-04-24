@@ -5,8 +5,13 @@
 <title>Greet - Login</title>
 
 <script src="https://kit.fontawesome.com/1ba8ad1665.js" crossorigin="anonymous"></script>
-<script>
+<script>	
 	function getPerson() {
+		
+		if (sessionStorage.getItem('UID') == null) {
+			window.location.href = "./login.html";
+		}
+		
 		var query = window.location.search.substring(1);
 		var vars = query.split("&");
 
@@ -30,6 +35,70 @@
 
 		// if pressed, make a call to UpdateGuestAttendanceServlet with ?event_id=eventId&email=email
 		// the returned json will have j.error if failed, and no other information
+		
+		const xhttp = new XMLHttpRequest();
+		xhttp.open("POST", "GetInvitationServlet", true);
+		xhttp.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+		xhttp.onreadystatechange = function() {
+			if (xhttp.readyState === 4) {
+				const jsonResponse = JSON.parse(this.responseText);
+
+				if (jsonResponse.error) {
+					alert("Failed to check in guest");
+				}
+				else {
+					document.getElementById("checkin").innerHTML = 
+						`<p>Press here to check in <b> ${jsonResponse.user.fname} ${jsonResponse.user.lname}
+						(${jsonResponse.user.email}) </b> to the event: <br/><br/>
+						<b> ${jsonResponse.event.description} </b><br/>
+						Location: ${jsonResponse.event.location} <br/>
+						Time: ${jsonResponse.event.date} ${jsonResponse.event.time}<br/><br/></p>`;
+				}
+			}
+		}
+		xhttp.send("event_id=" + eventId +
+				   "&email=" + email);
+	}
+	function updateAttendance() {
+		
+		var query = window.location.search.substring(1);
+		var vars = query.split("&");
+
+		var email, eventId;
+
+		for (var pair of vars) {
+			var [key, value] = pair.split("=");
+
+			if (key === "email")
+				email = value;
+			else if (key === "eventId")
+				eventId = value;
+		}
+		
+		const xhttp = new XMLHttpRequest();
+		xhttp.open("POST", "UpdateGuestAttendanceServlet", true);
+		xhttp.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+		xhttp.onreadystatechange = function() {
+			if (xhttp.readyState === 4) {
+				const jsonResponse = JSON.parse(this.responseText);
+
+				if (jsonResponse.error) {
+					alert("Failed to check in guest");
+				}
+				else {
+					document.getElementById("checkin").innerHTML = 
+						`<p style="font-size:36px; color:#317b1e"><b>Success!</b></p>
+						<p style="font-size:32px">User has been checked in.</p>`;
+					document.getElementById("checkInGuest").style.display = "none";
+				}
+			}
+		}
+		xhttp.send("event_id=" + eventId +
+				   "&email=" + email);
+	}
+	function logout() {
+		sessionStorage.clear();
+		window.location.href = "./login.html";
 	}
 </script>
 
@@ -47,39 +116,54 @@
 		color: #dbdbdb;
 		text-decoration: none;
 	}
-	/*.navRight {*/
-	/*	float: right;*/
-	/*	font-size: 13px;*/
-	/*}*/
-	/*.navRight:hover {*/
-	/*	color: white;*/
-	/*}*/
+	.navRight {
+		float: right;
+		font-size: 13px;
+		padding: 0px 5px 0px 15px;
+	}
+	.navRight:hover {
+		color: white;
+	}
+	#logoutButton {
+		padding: 0px 5px 0px 15px;
+		color: white;
+		background-color: #499DF5;
+		border: none;
+		cursor: pointer;
+	}
+	#logoutButton:hover {
+		border-style:solid; 
+		border-radius:5px; 
+		border-width:1.5px; 
+		border-color:white;
+		padding: 5px;
+		position:relative;
+		bottom: 6px;
+		left: 1px;
+	}
 	.column {
 		float: left;
-		width: 30%;
-		padding: 5% 10%;
+		margin-left: 20%;
+		width: 50%;
+		padding: 2% 5%;
+		font-size: 24px;
 	}
-	.column input[type=text], input[type=password], input[type=email] {
-		width:100%;
-		padding: 7px;
-		border: 2px solid LightGrey;
-	}
-	.column input[type=text]:focus, input[type=password]:focus, input[type=email]:focus {
-		outline: none;
-		border: 2px solid DarkGrey;
-	}
-	button[type=submit] {
+	#checkInGuest {
 		background-color: #74BBFB;
 		border: none;
 		color: white;
 		text-decoration: none;
-		width:104%;
-		font-size:16px;
+		width:60%;
+		height: 80px;
+		font-size:24px;
+		font-weight: bold;
 		padding:12px;
 		border-radius: 5px;
 		cursor: pointer;
+		position: relative;
+		left:20%;
 	}
-	button[type=submit]:hover {
+	#checkInGuest:hover {
 		background-color: #499DF5;
 	}
 	#footer {
@@ -91,12 +175,17 @@
 	}
 </style>
 </head>
-<body>
+<body onload="getPerson()">
 <!--  Navigation bar was based on: https://www.w3schools.com/howto/howto_js_topnav.asp -->
 <div class="navBar">
 	<a style="color:#ffffff" href="./index.html"><b>Greet</b></a>
+	<button class="navRight" id="logoutButton" onclick="logout();">Logout</button>
 </div>
 
+<div class="column">
+	<div id="checkin"></div>
+	<button id="checkInGuest" onclick="updateAttendance(); return false;"><i class="fas fa-check"></i> Check In</button>
+</div>
 
 </body>
 </html>
