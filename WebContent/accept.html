@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="ISO-8859-1">
+<title>Greet - Accept Invitation</title>
+
+<script src="https://kit.fontawesome.com/1ba8ad1665.js" crossorigin="anonymous"></script>
+<script>	
+	function getEvent() {
+		
+		if (document.getElementById("invitation").hasAttribute("value")) {
+			return;
+		}
+		
+		if (sessionStorage.getItem('UID') == null) {
+			window.location.href = "./login.html";
+		}
+		
+		var query = window.location.search.substring(1);
+		var vars = query.split("&");
+
+		var eventId;
+
+		for (var pair of vars) {
+			var [key, value] = pair.split("=");
+
+			if (key === "eventId")
+				eventId = value;
+		}
+		
+		document.getElementById("invitation").setAttribute("value", eventId);
+		
+		const xhttp = new XMLHttpRequest();
+		xhttp.open("POST", "GetInvitationServlet", true);
+		xhttp.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+		xhttp.onreadystatechange = function() {
+			if (xhttp.readyState === 4) {
+				const jsonResponse = JSON.parse(this.responseText);
+
+				if (jsonResponse.error) {
+					alert("Failed to find invitation");
+				}
+				else {
+					document.getElementById("eventTitle").innerHTML = 
+						`You've been invited to ${jsonResponse.event.description}!`;
+					document.getElementById("event").innerHTML = 
+						`Event: ${jsonResponse.event.description} <br/><br/>
+						Location: ${jsonResponse.event.location} <br/><br/>
+						Time: ${jsonResponse.event.date} ${jsonResponse.event.time} <br/><br/>`;
+				}
+			}
+		}
+		xhttp.send("event_id=" + eventId +
+				   "&email=" + sessionStorage.getItem("email"));
+	}
+	function accept() {
+		
+		var eventId = document.getElementById("invitation").getAttribute("value");
+		
+		const xhttp = new XMLHttpRequest();
+		xhttp.open("POST", "UpdateGuestStatusServlet", true);
+		xhttp.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+		xhttp.onreadystatechange = function() {
+			if (xhttp.readyState === 4) {
+				const jsonResponse = JSON.parse(this.responseText);
+
+				if (jsonResponse.error) {
+					alert("Failed to accept invitation");
+				}
+				else {
+					document.getElementById("invitationDiv").style.display = "none";
+					fetch("GetQrServlet")
+					  .then(res=>{return res.blob()})
+					  .then(blob=>{
+					    var img = URL.createObjectURL(blob);
+					    // Do whatever with the img
+					    document.getElementById('img').setAttribute('src', img);
+					    document.getElementById("screenshot").style.display = "";
+					  })
+				}
+			}
+		}
+		xhttp.send("event_id=" + eventId +
+				   "&email=" + document.getElementById("email").value +
+				   "&fname=" + document.getElementById("fname").value +
+				   "&lname=" + document.getElementById("lname").value);
+	}
+	function logout() {
+		sessionStorage.clear();
+		window.location.href = "./login.html";
+	}
+</script>
+
+<style>
+	body {
+		font-family: Helvetica,serif;
+		margin: 0;
+		padding: 0;
+	}
+	.navBar {
+		background-color: #499DF5;
+		padding: 15px;
+	}
+	.navBar a {
+		color: #dbdbdb;
+		text-decoration: none;
+	}
+	.navRight {
+		float: right;
+		font-size: 13px;
+		padding: 0px 5px 0px 15px;
+	}
+	.navRight:hover {
+		color: white;
+	}
+	#logoutButton {
+		padding: 0px 5px 0px 15px;
+		color: white;
+		background-color: #499DF5;
+		border: none;
+		cursor: pointer;
+	}
+	#logoutButton:hover {
+		border-style:solid; 
+		border-radius:5px; 
+		border-width:1.5px; 
+		border-color:white;
+		padding: 5px;
+		position:relative;
+		bottom: 6px;
+		left: 1px;
+	}
+	.column {
+		float: left;
+		margin-left: 20%;
+		width: 50%;
+		padding: 2% 5%;
+		font-size: 24px;
+	}
+	input[type=text] {
+		padding:4px;
+		width: 30%;
+	}
+	#accept, input[type=reset] {
+		border: none;
+		color: white;
+		text-decoration: none;
+		width:20%;
+		height: 50px;
+		font-size:18px;
+		font-weight: bold;
+		padding:12px;
+		border-radius: 5px;
+		cursor: pointer;
+	}
+	#accept {
+		background-color:#4ed964;
+		position:relative;
+		bottom: 50px;
+		left: 25%;
+	}
+	#decline {
+		background-color:#ff3b31;
+		position:relative;
+		left:15%;
+	}
+	#accept:hover {
+		background-color: #49c95d;
+	}
+	#decline:hover {
+		background-color: #e02d24;
+	}
+	#footer {
+		background-color:LightGrey; 
+		height:15px; 
+		width:100%; 
+		position:fixed; 
+		bottom: 0;
+	}
+</style>
+</head>
+<body onload="getEvent()">
+<!--  Navigation bar was based on: https://www.w3schools.com/howto/howto_js_topnav.asp -->
+<div class="navBar">
+	<a style="color:#ffffff" href="./index.html"><b>Greet</b></a>
+	<button class="navRight" id="logoutButton" onclick="logout();">Logout</button>
+</div>
+
+<div class="column" id="invitationDiv">
+	<div id="invitation">
+		<p style="font-weight:bold; text-align:center; font-size:28px;" id="eventTitle"></p>
+		<p style="text-align:center; font-size:22px" id="event"></p>
+	</div>
+	<form id="create" style="font-size:20px; margin-left:20px; text-align:center" onsubmit="accept(); return false;">
+		<p style="font-size:22px; font-weight:bold">Accept or Decline</p>
+		<label for="fname">First Name: </label>
+		<input type="text" id="fname" name="fname" REQUIRED><br/><br/>
+		<div style="position:relative; left:1px;">
+			<label for="lname">Last Name: </label>
+			<input type="text" id="lname" name="lname" REQUIRED><br/><br/>
+		</div>
+		<div style="position:relative; left:24px;">
+			<label for="email">Email: </label>
+			<input type="text" id="email" name="email" REQUIRED><br/><br/>
+		</div>
+		<input type="reset" onclick="alert('Invitation declined')" id="decline" value="Decline">
+	</form>
+	<button id="accept" style="text-align:center" onclick="accept();">Accept</button>
+
+	<p id="screenshot">Screenshot this QR code to be checked in:</p>
+	<img id="img">
+</div>
+
+</body>
+</html>
