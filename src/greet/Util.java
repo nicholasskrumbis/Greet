@@ -1,5 +1,13 @@
 package greet;
 
+import com.google.zxing.BarcodeFormat;
+import com.google.zxing.MultiFormatWriter;
+import com.google.zxing.WriterException;
+import com.google.zxing.client.j2se.MatrixToImageWriter;
+import com.google.zxing.common.BitMatrix;
+
+import java.io.File;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -33,4 +41,20 @@ public class Util {
         return map;
     }
 
+    public static int createQR(int eventId, String email)
+            throws WriterException, IOException {
+        // feel free to change this link, not sure what it should actually be
+        String link = "http://localhost:8080/greet/checkin?eventId=%d&email=%s";
+        String data = String.format(link, eventId, email);
+
+        int qrId = (eventId + email).hashCode();
+
+        BitMatrix matrix = new MultiFormatWriter().encode(data,
+                BarcodeFormat.QR_CODE, Util.QR_SIZE, Util.QR_SIZE);
+
+        MatrixToImageWriter.writeToPath(matrix, "png",
+                new File("qrs/" + qrId + ".png").toPath());
+
+        return qrId;
+    }
 }

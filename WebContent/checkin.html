@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="ISO-8859-1">
+<title>Greet - Login</title>
+
+<script src="https://kit.fontawesome.com/1ba8ad1665.js" crossorigin="anonymous"></script>
+<script>
+	function confirmPassword() {
+		if (document.getElementById("confirm-password").value !== document.getElementById("password").value) {
+			document.getElementById("confirm-password").setCustomValidity('Passwords must match');
+		}
+		else {
+			document.getElementById("confirm-password").setCustomValidity('');
+		}
+	}
+	function duplicateEmail() {
+		const xhttp = new XMLHttpRequest();
+		xhttp.open("POST", "DuplicateEmailServlet", true);
+		xhttp.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+		xhttp.onreadystatechange = function() {
+			if (xhttp.readyState === 4) {
+				const jsonResponse = JSON.parse(this.responseText);
+
+				if (jsonResponse.error) {
+					document.getElementById("email").setCustomValidity(
+							'There is already an account associated with this email.');
+				}
+				else {
+					document.getElementById("email").setCustomValidity('');
+				}
+			}
+		}
+		xhttp.send("email=" + document.signup.email.value);
+	}
+	function registerUser() {
+		const xhttp = new XMLHttpRequest();
+		xhttp.open("POST", "RegisterUserServlet", true);
+		xhttp.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+		xhttp.onreadystatechange = function() {
+			if (xhttp.readyState === 4) {
+				const jsonResponse = JSON.parse(this.responseText);
+
+				if (jsonResponse.error) {
+					document.getElementById("email").setCustomValidity('There is already an account associated with the email');
+				}
+				else {
+					document.getElementById("email").setCustomValidity('');
+					sessionStorage.setItem("email", jsonResponse.email);
+					sessionStorage.setItem("UID", jsonResponse.UID);
+					sessionStorage.setItem("fname", jsonResponse.fname);
+					sessionStorage.setItem("lname", jsonResponse.lname);
+					window.location.href = "./index.html";
+				}
+			}
+		}
+		xhttp.send("email=" + document.signup.email.value +
+				   "&fname=" + document.signup.fname.value +
+				   "&lname=" + document.signup.lname.value +
+				   "&password=" + document.signup.password.value);
+	}
+	function loginUser() {
+		const xhttp = new XMLHttpRequest();
+		xhttp.open("POST", "LoginUserServlet", true);
+		xhttp.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+		xhttp.onreadystatechange = function() {
+			if (xhttp.readyState === 4) {
+				const jsonResponse = JSON.parse(this.responseText);
+
+				if (jsonResponse.error) {
+					document.getElementById("loginError").innerHTML = "Username or password is incorrect.";
+				}
+				else {
+					sessionStorage.setItem("email", jsonResponse.email);
+					sessionStorage.setItem("UID", jsonResponse.UID);
+					sessionStorage.setItem("fname", jsonResponse.fname);
+					sessionStorage.setItem("lname", jsonResponse.lname);
+					window.location.href = "./index.html";
+				}
+			}
+		}
+		xhttp.send("email=" + document.login.loginEmail.value +
+				   "&password=" + document.login.loginPassword.value);
+	}
+</script>
+
+<style>
+	body {
+		font-family: Helvetica,serif;
+		margin: 0;
+		padding: 0;
+	}
+	.navBar {
+		background-color: #499DF5;
+		padding: 15px;
+	}
+	.navBar a {
+		color: #dbdbdb;
+		text-decoration: none;
+	}
+	/*.navRight {*/
+	/*	float: right;*/
+	/*	font-size: 13px;*/
+	/*}*/
+	/*.navRight:hover {*/
+	/*	color: white;*/
+	/*}*/
+	.column {
+		float: left;
+		width: 30%;
+		padding: 5% 10%;
+	}
+	.column input[type=text], input[type=password], input[type=email] {
+		width:100%;
+		padding: 7px;
+		border: 2px solid LightGrey;
+	}
+	.column input[type=text]:focus, input[type=password]:focus, input[type=email]:focus {
+		outline: none;
+		border: 2px solid DarkGrey;
+	}
+	button[type=submit] {
+		background-color: #74BBFB;
+		border: none;
+		color: white;
+		text-decoration: none;
+		width:104%;
+		font-size:16px;
+		padding:12px;
+		border-radius: 5px;
+		cursor: pointer;
+	}
+	button[type=submit]:hover {
+		background-color: #499DF5;
+	}
+	#footer {
+		background-color:LightGrey; 
+		height:15px; 
+		width:100%; 
+		position:fixed; 
+		bottom: 0;
+	}
+</style>
+</head>
+<body>
+<!--  Navigation bar was based on: https://www.w3schools.com/howto/howto_js_topnav.asp -->
+<div class="navBar">
+	<a style="color:#ffffff" href="./index.html"><b>Greet</b></a>
+	
+</div>
+
+<div class="column">
+	<p style="color:Grey; font-size:28px;" >Login</p>
+	<form name="login" onsubmit="loginUser(); return false;">
+		<label for="loginEmail" style="color:Grey; font-size:14px;">Email</label>
+		<input type="text" name="loginUsername" id="loginEmail" REQUIRED>
+		<label for="loginPassword" style="color:Grey; font-size:14px; padding-top:8px;">Password</label>
+		<input type="password" name="loginPassword" id="loginPassword" REQUIRED>
+	
+		<br/> <br/>
+		<div style="color: red;" id="loginError"></div>
+		<br/>
+
+		<button type="submit">
+		<i class="fas fa-sign-in-alt"></i> Sign In
+		</button>
+		<br/><br/>
+		
+		<hr style="width:50%; text-align:center; height:1.25px; border-width:0; color:lightgrey; background-color:lightgrey;">
+		<br/>
+		
+		<div style="position:relative; left:1.5%; width:auto; height:47%;" data-theme="dark"  data-longtitle="true" class="g-signin2" data-onsuccess="onSignIn"></div>	
+	</form>
+</div>
+
+<div class="column">
+	<p style="color:Grey; font-size:28px;">Sign Up</p>
+	<form name="signup" onsubmit="registerUser(); return false;">
+		<label for="fname" style="color:Grey; font-size:14px; padding-top:8px;">First Name: </label>
+		<input type="text" name="fname" id="fname" REQUIRED>
+		<label for="lname" style="color:Grey; font-size:14px; padding-top:8px;">Last Name: </label>
+		<input type="text" name="lname" id="lname" REQUIRED>
+		<label for="email" style="color:Grey; font-size:14px;">Email: </label>
+		<input type="email" onblur="duplicateEmail();" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$" name="email" id="email" REQUIRED>
+		<label for="password" style="color:Grey; font-size:14px; padding-top:8px;">Password: </label>
+		<input type="password" name="password" id="password" oninput="confirmPassword()" REQUIRED>
+		<label for="confirm-password" style="color:Grey; font-size:14px; padding-top:8px;">Confirm Password: </label>
+		<input type="password" name="confirm-password" id="confirm-password" oninput="confirmPassword()" REQUIRED>
+		
+		<br/><br/>
+		<button type="submit">
+		<i class="fas fa-user-plus"></i> Register
+		</button>
+	</form>
+</div>
+
+<div id="footer"></div>
+
+</body>
+</html>
