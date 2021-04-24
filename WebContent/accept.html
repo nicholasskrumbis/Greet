@@ -69,12 +69,30 @@
 				}
 				else {
 					document.getElementById("invitationDiv").style.display = "none";
-					fetch("GetQrServlet")
+					
+					var details = { 'event_id': `${eventId}`, 'email': `${document.getElementById("email").value}` };
+
+					var formBody = [];
+					for (var property in details) {
+						var encodedKey = encodeURIComponent(property);
+						var encodedValue = encodeURIComponent(details[property]);
+						formBody.push(encodedKey + "=" + encodedValue);
+					}
+					formBody = formBody.join("&");
+					
+					fetch("GetQRServlet?", {
+						method: 'POST',
+						headers: {
+							'Content-Type': 'application/x-www-form-urlencoded'
+						},
+						body: formBody
+					})
 					  .then(res=>{return res.blob()})
 					  .then(blob=>{
 					    var img = URL.createObjectURL(blob);
 					    // Do whatever with the img
 					    document.getElementById('img').setAttribute('src', img);
+					    document.getElementById('img').style.display = "block";
 					    document.getElementById("screenshot").style.display = "";
 					  })
 				}
@@ -170,6 +188,13 @@
 	#decline:hover {
 		background-color: #e02d24;
 	}
+	#img {
+		display: none;
+		margin-left: auto;
+		margin-right: auto;
+		height: 50%;
+		width: 50%;
+	}
 	#footer {
 		background-color:LightGrey; 
 		height:15px; 
@@ -207,9 +232,11 @@
 	</form>
 	<button id="accept" style="text-align:center" onclick="accept();">Accept</button>
 
-	<p id="screenshot">Screenshot this QR code to be checked in:</p>
-	<img id="img">
 </div>
+
+<p id="screenshot" class="column" style="display:none; text-align:center; font-size: 36px">Screenshot this QR code to be checked in:</p>
+<br/><br/>
+<div class="column"><img id="img" src="" alt=""></div>
 
 </body>
 </html>

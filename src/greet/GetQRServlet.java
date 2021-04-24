@@ -5,6 +5,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -15,12 +16,12 @@ public class GetQRServlet extends HttpServlet {
     private static final long serialVersionUID = 10L;
 
     @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp)
+    protected void service(HttpServletRequest req, HttpServletResponse resp)
             throws IOException {
 
         String s = req.getReader().lines().collect(Collectors.joining());
-        Map<String, String> params = Util.queryToMap(s);
-
+        Map<String, String> params = Util.queryToMap(java.net.URLDecoder.decode(s, StandardCharsets.UTF_8));
+        
         resp.setContentType("image/png");
         OutputStream os = resp.getOutputStream();
 
