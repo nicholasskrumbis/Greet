@@ -17,8 +17,8 @@ CREATE TABLE event
     host_id     INT             NOT NULL,
     date        VARCHAR(10)     NOT NULL,
     time        VARCHAR(10)     NOT NULL,
-    location    VARCHAR(10)     NOT NULL,
-    description VARCHAR(10)     NOT NULL,
+    location    VARCHAR(50)     NOT NULL,
+    description VARCHAR(50)     NOT NULL,
     FOREIGN KEY (host_id) REFERENCES user (id)
 );
 

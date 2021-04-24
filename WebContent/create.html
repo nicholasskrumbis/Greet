@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="ISO-8859-1">
+<title>Greet - Create Event</title>
+
+<style>
+	body {
+		font-family: Helvetica,serif;
+		margin: 0;
+		padding: 0;
+	}
+	.navBar {
+		background-color: #499DF5;
+		padding: 15px;
+	}
+	.navBar a {
+		color: #dbdbdb;
+		text-decoration: none;
+	}
+	.navRight {
+		float: right;
+		font-size: 13px;
+		padding: 0px 5px 0px 15px;
+	}
+	.navRight:hover {
+		color: white;
+	}
+	#logoutButton {
+		padding: 0px 5px 0px 15px;
+		color: white;
+		background-color: #499DF5;
+		border: none;
+		cursor: pointer;
+	}
+	#logoutButton:hover {
+		border-style:solid; 
+		border-radius:5px; 
+		border-width:1.5px; 
+		border-color:white;
+		padding: 5px;
+		position:relative;
+		bottom: 6px;
+		left: 1px;
+	}
+	.column {
+		float: left;
+		margin-left: 20%;
+		width: 50%;
+		padding: 2% 5%;
+	}
+	#create label {
+		font-size: 18px;
+	}
+	#create input {
+		width: 25%;
+	}
+	#create input[type=submit] {
+		background-color: #74BBFB;
+		border: none;
+		color: white;
+		text-decoration: none;
+		width:40%;
+		font-size:16px;
+		padding:12px;
+		border-radius: 5px;
+		cursor: pointer;
+	}
+	#create input[type=submit]:hover {
+		background-color: #499DF5;
+	}
+</style>
+
+<script src="https://kit.fontawesome.com/1ba8ad1665.js" crossorigin="anonymous"></script>
+<script>
+	function getProfile() {
+		if (sessionStorage.getItem('UID') == null) {
+			window.location.href = "./login.html";
+		}
+	}
+	function create() {
+		const xhttp = new XMLHttpRequest();
+		xhttp.open("POST", "CreateEventServlet", true);
+		xhttp.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+		xhttp.onreadystatechange = function() {
+			if (xhttp.readyState === 4) {
+				const jsonResponse = JSON.parse(this.responseText);
+
+				if (jsonResponse.error) {
+					alert("Failed to create event");
+				}
+				else {
+					alert("SUCCESS: Event created");
+					document.getElementById("date").value = null;
+					document.getElementById("time").value = null;
+					document.getElementById("location").value = null;
+					document.getElementById("desc").value = null;
+				}
+			}
+		}
+		xhttp.send("UID=" + sessionStorage.getItem("UID") +
+				   "&date=" + document.getElementById("date").value +
+				   "&time=" + document.getElementById("time").value +
+				   "&location=" + document.getElementById("location").value +
+				   "&description=" + document.getElementById("desc").value);
+	}
+	function logout() {
+		sessionStorage.clear();
+		window.location.href = "./login.html";
+	}
+</script>
+
+</head>
+<body onload="getProfile();">
+
+<div class="navBar">
+	<a style="color:#ffffff" href="./index.html"><b>Greet</b></a>
+	<button class="navRight" id="logoutButton" onclick="logout();">Logout</button>
+</div>
+
+<div class="column">
+	<p style="font-size:24px; text-align:center;"><b>Create Event</b></p>
+	<form id="create" style="font-size:16px; margin-left:20px; text-align:center" onsubmit="create(); return false;">
+		<label for="desc">Event Description: </label>
+		<input type="text" id="desc" name="desc" REQUIRED><br/><br/>
+		<div style="position:relative; left:50px;">
+			<label for="date">Date: </label>
+			<input type="date" id="date" name="date" REQUIRED><br/><br/>
+		</div>
+		<div style="position:relative; left:50px;">
+			<label for="time">Time: </label>
+			<input type="time" id="time" name="time" REQUIRED><br/><br/>
+		</div>
+		<div style="position:relative; left:39px;">
+			<label for="location">Location: </label>
+			<input type="text" id="location" name="location" REQUIRED><br/><br/><br/>
+		</div>
+		<input type="submit" value="+ Create Event"><br/>
+	</form>
+
+	<br/><br/>
+</div>
+
+</body>
+</html>
