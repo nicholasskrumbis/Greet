@@ -41,25 +41,6 @@ public class LoginUserServlet extends HttpServlet {
         resp.getWriter().println(result);
     }
 
-    @SuppressWarnings("unused")
-    private static class User {
-        int UID;
-		String fname;
-        String lname;
-        String email;
-
-        public User() {
-            UID = -1;
-        }
-
-        public User(int id, String f, String l, String e) {
-            UID = id;
-            fname = f;
-            lname = l;
-            email = e;
-        }
-    }
-
     private User loginUser(String email, String password) {
         Connection conn = null;
         PreparedStatement ps = null;

@@ -38,21 +38,6 @@ public class GetScheduledEventsServlet extends HttpServlet {
         resp.setContentType("application/json");
         resp.getWriter().println(result);
     }
-    
-    @SuppressWarnings("unused")
-    private static class Event {
-        int eventId;
-        String date, time, description, location;
-
-        public Event(int eventId, String date, String time,
-                     String description, String location) {
-            this.eventId = eventId;
-            this.date = date;
-            this.time = time;
-            this.description = description;
-            this.location = location;
-        }
-    }
 
     private String getScheduledEvents(int id) {
         Connection conn = null;
