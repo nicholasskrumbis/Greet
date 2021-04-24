@@ -12,7 +12,7 @@ import java.util.stream.Collectors;
 @WebServlet("/GetQRServlet")
 public class GetQRServlet extends HttpServlet {
     @Serial
-    private static final long serialVersionUID = 9L;
+    private static final long serialVersionUID = 10L;
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp)

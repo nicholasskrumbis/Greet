@@ -44,7 +44,7 @@ public class Util {
     public static int createQR(int eventId, String email)
             throws WriterException, IOException {
         // feel free to change this link, not sure what it should actually be
-        String link = "http://localhost:8080/greet/checkin?eventId=%d&email=%s";
+        String link = "http://localhost:8080/Greet/checkin?eventId=%d&email=%s";
         String data = String.format(link, eventId, email);
 
         int qrId = (eventId + email).hashCode();
