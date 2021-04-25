@@ -16,7 +16,7 @@ public class GetQRServlet extends HttpServlet {
     private static final long serialVersionUID = 10L;
 
     @Override
-    protected void service(HttpServletRequest req, HttpServletResponse resp)
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp)
             throws IOException {
 
         String s = req.getReader().lines().collect(Collectors.joining());
