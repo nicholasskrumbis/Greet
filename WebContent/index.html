@@ -159,17 +159,9 @@
 						console.log(events)
 						var id = events[i].eventId;
 
-						/**
-						 * hi aviv here, i did something similar to the below in my hw 4,
-						 * but i found that it was a little easier to use strings but
-						 * with backticks (`asdf`). this allows you to inject variables
-						 * directly into the string, so instead of:
-						 * 		'<div class=' + className + '>' (with single quotes)
-						 * you'd have something like:
-						 * 		`<div class=${className}>` (with backticks)
-						 * this is just a style thing tho, so up to you if you want to
-						 * use it or not!
-						 */
+						var preUrl = window.location.hostname;
+						if (window.location.port !== 80)
+							preUrl += ':' + window.location.port;
 
 						document.getElementById("scheduled").innerHTML += 
 							'<div class=' + className + '>' +
@@ -188,7 +180,7 @@
 							'<input type="submit" value="Invite"><br/>' +
 							'<div id="' + id + 'Link" class="userInfo" style="font-size:16px;">' +
 							'<p>After inviting guests, send them this link to allow them to accept:</p>' +
-							'<p><mark>' + window.location.hostname + ':' + window.location.port + '/Greet/accept.html?event_id=' + id + '</mark></p></div></form></div>';
+							'<p><mark>' + preUrl + '/Greet/accept.html?event_id=' + id + '</mark></p></div></form></div>';
 					}
 				}
 			}
