@@ -99,12 +99,11 @@
                     console.log(guests);
 
                     if (guests.error || guests.length < 1) {
-                        document.getElementById("attending").innerHTML = "You haven't invited anyone yet! " +
-                            "You can do this from the <a href='index.html'>home screen</a>.";
+                        alert("You haven't invited anyone yet! " +
+								"You can do this from the home screen.");
                     }
                     else {
                         for (var i = 0; i < guests.length; i++) {
-
                             // variables from guest
                             var fname = guests[i].fname; // may be undefined
                             var lname = guests[i].lname; // may be undefined
@@ -130,7 +129,6 @@
                             }
                             console.log(attendance);
 
-                            // copy pasted from index.html, not sure how this should be formatted
                             document.getElementById("tbody").innerHTML +=
                                 `<tr><td>${fname}</td>
                                 <td>${lname}</td>

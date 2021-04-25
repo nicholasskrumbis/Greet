@@ -67,6 +67,9 @@
 		font-size: 20px;
 		/*line-height: 12px;*/
 	}
+	.inviteLink {
+		line-height: normal;
+	}
 	.eventInfo {
 		font-size: 20px;
 		line-height: 16px;
@@ -183,7 +186,7 @@
 							'<input type="submit" value="Invite"><br/>' +
 							'<div id="' + id + 'Link" class="userInfo" style="font-size:16px;">' +
 							'<p>After inviting guests, send them this link to allow them to accept:</p>' +
-							'<p><mark><a href="' + url + '">' + url + '</a></mark></p></div></form></div>';
+							'<p><mark><a class="inviteLink" href="' + url + '">' + url + '</a></mark></p></div></form></div>';
 					}
 				}
 			}
