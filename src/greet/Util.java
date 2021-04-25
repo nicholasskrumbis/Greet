@@ -41,20 +41,23 @@ public class Util {
         return map;
     }
 
-    public static int createQR(int eventId, String email)
+    public static void createQR(int eventId, String email)
             throws WriterException, IOException {
         // feel free to change this link, not sure what it should actually be
-        String link = "http://localhost:8080/Greet/checkin.html?eventId=%d&email=%s";
+//        String link = "http://localhost:8080/Greet/checkin.html?event_id=%d&email=%s";
+        String link = "http://greet.onthewifi.com:37947/Greet/checkin.html?event_id=%d&email=%s";
         String data = String.format(link, eventId, email);
 
-        int qrId = (eventId + email).hashCode();
+        int qrId = qrID(eventId, email);
 
         BitMatrix matrix = new MultiFormatWriter().encode(data,
                 BarcodeFormat.QR_CODE, Util.QR_SIZE, Util.QR_SIZE);
 
         MatrixToImageWriter.writeToPath(matrix, "png",
                 new File("qrs/" + qrId + ".png").toPath());
+    }
 
-        return qrId;
+    public static int qrID(int eventId, String email) {
+        return (eventId + email).hashCode();
     }
 }

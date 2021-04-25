@@ -70,23 +70,34 @@ public class UpdateGuestStatusServlet extends HttpServlet {
             } else // user isn't invited
                 return false;
 
-            int qrId = Util.createQR(eventId, email);
+            // create qr code image in a different thread
+            Thread t = new Thread(() -> {
+                try {
+                    Util.createQR(eventId, email);
+                } catch (WriterException | IOException e) {
+                    e.printStackTrace();
+                }
+            });
+            t.start();
 
             ps.close();
             ps = conn.prepareStatement(
                     "UPDATE attendance " +
                     "SET qr_id = ?, fname = ?, lname = ?, status = 1 " +
                     "WHERE event_id = ? AND email = ?");
-            ps.setInt(1, qrId);
+            ps.setInt(1, Util.qrID(eventId, email));
             ps.setString(2, fname);
             ps.setString(3, lname);
             ps.setInt(4, eventId);
             ps.setString(5, email);
             int rowsAffected = ps.executeUpdate();
 
+            // wait for qr to finish being made
+            while (t.isAlive())
+                Thread.yield();
+
             return rowsAffected > 0;
-        } catch (SQLException | ClassNotFoundException |
-                WriterException | IOException e) {
+        } catch (SQLException | ClassNotFoundException e) {
             e.printStackTrace();
         } finally {
             try {
