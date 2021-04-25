@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="ISO-8859-1">
+<title>Greet</title>
+
+<style>
+    body {
+        font-family: Helvetica,serif;
+        margin: 0;
+        padding: 0;
+    }
+    .navBar {
+        background-color: #499DF5;
+        padding: 15px;
+    }
+    .navBar a {
+        color: #dbdbdb;
+        text-decoration: none;
+    }
+    #logoutButton {
+        padding: 0px 5px 0px 15px;
+        color: white;
+        background-color: #499DF5;
+        border: none;
+        cursor: pointer;
+    }
+    #logoutButton:hover {
+        border-style:solid;
+        border-radius:5px;
+        border-width:1.5px;
+        border-color:white;
+        padding: 5px;
+        position:relative;
+        bottom: 6px;
+        left: 1px;
+    }
+</style>
+
+<script src="https://kit.fontawesome.com/1ba8ad1665.js" crossorigin="anonymous"></script>
+<script>
+	function getAttendance() {
+		if (sessionStorage.getItem('UID') == null) {
+			window.location.href = "./login.html";
+		}
+		else {
+            var query = window.location.search.substring(1);
+            var vars = query.split("&");
+
+            var eventId;
+
+            for (var pair of vars) {
+                var [key, value] = pair.split("=");
+
+                if (key === "event_id")
+                    eventId = value;
+            }
+
+            const xhttp = new XMLHttpRequest();
+            xhttp.open("POST", "GetEventAttendanceServlet", true);
+            xhttp.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+            xhttp.onreadystatechange = function() {
+                if (xhttp.readyState === 4) {
+                    const guests = JSON.parse(this.responseText);
+                    console.log(guests);
+
+                    if (guests.error || guests.length < 1) {
+                        document.getElementById("attending").innerHTML = "You haven't invited anyone yet! " +
+                            "You can do this from the <a href='index.html'>home screen</a>.";
+                    }
+                    else {
+                        for (var i = 0; i < guests.length; i++) {
+                            // not sure what to put here
+                            // var className = "\"eventInfo\"";
+                            // if (i === 0 && events.length > 1) {
+                            // 	className = "\"eventInfo1\"";
+                            // }
+
+                            // variables from guest
+                            var fname = guests[i].fname; // may be undefined
+                            var lname = guests[i].lname; // may be undefined
+                            var email = guests[i].email; // will be defined
+                            var status = guests[i].status; // 0 or 1
+                            var attendance = guests[i].attendance; // 0 or 1
+
+                            // copy pasted from index.html, not sure how this should be formatted
+                            document.getElementById("attending").innerHTML +=
+                                '<div class=' + className + '>' +
+                                '<p>' + events[i].description + '</p>' +
+                                '<p>' + events[i].date + ' at ' + events[i].time + '</p>' +
+                                '<p>Location: ' + events[i].location + '</p>';
+                        }
+                    }
+                }
+            }
+            // get event_id from url
+            xhttp.send("event_id=" + eventId);
+		}
+	}
+	
+	function logout() {
+		sessionStorage.clear();
+		window.location.href = "./login.html";
+	}
+</script>
+
+</head>
+<body onload="getAttendance();">
+
+<div class="navBar">
+    <a style="color:#ffffff" href="./index.html"><b>Greet</b></a>
+    <button class="navRight" id="logoutButton" onclick="logout();">Logout</button>
+</div>
+
+
+</body>
+</html>

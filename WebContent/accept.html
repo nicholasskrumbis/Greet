@@ -49,6 +49,13 @@
 		xhttp.send("event_id=" + eventId);
 	}
 	function accept() {
+		for (var id of ["fname", "lname", "email"]) {
+			if (document.getElementById(id).value === "") {
+				alert('Please fill out all fields before accepting the invitation!');
+				return;
+			}
+		}
+
 		
 		var eventId = document.getElementById("invitation").getAttribute("value");
 		
@@ -60,7 +67,8 @@
 				const jsonResponse = JSON.parse(this.responseText);
 
 				if (jsonResponse.error) {
-					alert("Failed to accept invitation");
+					alert("Failed to accept invitation; you might have already accepted " +
+							"your invitation, or you might not be invited to this event!");
 				}
 				else {
 					document.getElementById("invitationDiv").style.display = "none";
@@ -224,12 +232,12 @@
 			<input type="text" id="email" name="email" REQUIRED><br/><br/>
 		</div>
 		<input type="reset" onclick="alert('Invitation declined')" id="decline" value="Decline">
-		<input type="submit" id="accept" style="text-align:center" value="Accept">
 	</form>
+	<button type="submit" id="accept" style="text-align:center" onclick="accept()">Accept</button>
 
 </div>
 
-<p id="screenshot" class="column" style="display:none; text-align:center; font-size: 36px">Screenshot this QR code to be checked in:</p>
+<p id="screenshot" class="column" style="display:none; text-align:center; font-size: 36px">Screenshot this QR code--you'll need it to be checked in!</p>
 <br/><br/>
 <div class="column"><img id="img" src="" alt=""></div>
 
