@@ -22,7 +22,7 @@
 
 			if (key === "email")
 				email = value;
-			else if (key === "eventId")
+			else if (key === "event_id")
 				eventId = value;
 		}
 
@@ -44,7 +44,7 @@
 				const jsonResponse = JSON.parse(this.responseText);
 
 				if (jsonResponse.error) {
-					alert("Failed to check in guest");
+					alert("Failed to find invitation for this user for this event");
 				}
 				else {
 					document.getElementById("checkin").innerHTML = 

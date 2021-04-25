@@ -64,7 +64,7 @@
 	}
 	.userInfo {
 		font-size: 20px;
-		line-height: 12px;
+		/*line-height: 12px;*/
 	}
 	.eventInfo {
 		font-size: 20px;
@@ -165,13 +165,13 @@
 							'</button>' +
 							'<div id="' + id + '" style="margin-left:20px; display:none;" class="userInfo">' +
 							'<p style="font-size:18px;">Invite Guests:</p>' +
-							'<form id="' + id + 'Form" style="font-size:16px; margin-left:20px;" onsubmit="inviteGuest(' + id + ');">' +
+							'<form id="' + id + 'Form" style="font-size:16px; margin-left:20px;" onsubmit="inviteGuest(' + id + '); return false">' +
 							'<label for="email">Email: </label>' +
 							'<input type="text" id="' + id + 'Email" name="email" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$" REQUIRED><br/><br/>' +
 							'<input type="submit" value="Invite"><br/>' +
 							'<div id="' + id + 'Link" class="userInfo" style="font-size:16px;">' +
 							'<p>After inviting guests, send them this link to allow them to accept:</p>' +
-							'<p><mark>' + window.location.hostname + '/Greet/accept.html?event_id=' + id + '</mark></p></div></form></div>';
+							'<p><mark>' + window.location.hostname + ':' + window.location.port + '/Greet/accept.html?event_id=' + id + '</mark></p></div></form></div>';
 					}
 				}
 			}
@@ -227,7 +227,7 @@
 				const jsonResponse = JSON.parse(this.responseText);
 
 				if (jsonResponse.error) {
-					alert("ERROR: Failed to invite guest");
+					alert("ERROR: Failed to invite guest (are they already invited?)");
 				}
 				else {						
 					document.getElementById(id + "Email").value = "";

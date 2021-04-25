@@ -12,10 +12,6 @@
 			return;
 		}
 		
-		if (sessionStorage.getItem('UID') == null) {
-			window.location.href = "./login.html";
-		}
-		
 		var query = window.location.search.substring(1);
 		var vars = query.split("&");
 
@@ -24,34 +20,33 @@
 		for (var pair of vars) {
 			var [key, value] = pair.split("=");
 
-			if (key === "eventId")
+			if (key === "event_id")
 				eventId = value;
 		}
 		
 		document.getElementById("invitation").setAttribute("value", eventId);
 		
 		const xhttp = new XMLHttpRequest();
-		xhttp.open("POST", "GetInvitationServlet", true);
+		xhttp.open("POST", "GetEventServlet", true);
 		xhttp.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
 		xhttp.onreadystatechange = function() {
 			if (xhttp.readyState === 4) {
 				const jsonResponse = JSON.parse(this.responseText);
 
 				if (jsonResponse.error) {
-					alert("Failed to find invitation");
+					alert("Failed to find event");
 				}
 				else {
 					document.getElementById("eventTitle").innerHTML = 
-						`You've been invited to ${jsonResponse.event.description}!`;
+						`You've been invited to ${jsonResponse.description}!`;
 					document.getElementById("event").innerHTML = 
-						`Event: ${jsonResponse.event.description} <br/><br/>
-						Location: ${jsonResponse.event.location} <br/><br/>
-						Time: ${jsonResponse.event.date} ${jsonResponse.event.time} <br/><br/>`;
+						`Event: ${jsonResponse.description} <br/><br/>
+						Location: ${jsonResponse.location} <br/><br/>
+						Time: ${jsonResponse.date} ${jsonResponse.time} <br/><br/>`;
 				}
 			}
 		}
-		xhttp.send("event_id=" + eventId +
-				   "&email=" + sessionStorage.getItem("email"));
+		xhttp.send("event_id=" + eventId);
 	}
 	function accept() {
 		
@@ -229,8 +224,8 @@
 			<input type="text" id="email" name="email" REQUIRED><br/><br/>
 		</div>
 		<input type="reset" onclick="alert('Invitation declined')" id="decline" value="Decline">
+		<input type="submit" id="accept" style="text-align:center" value="Accept">
 	</form>
-	<button id="accept" style="text-align:center" onclick="accept();">Accept</button>
 
 </div>
 

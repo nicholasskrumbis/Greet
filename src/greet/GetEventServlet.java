@@ -1,5 +1,7 @@
 package greet;
 
+import com.google.gson.Gson;
+
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -13,10 +15,10 @@ import java.sql.SQLException;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-@WebServlet("/InviteGuestServlet")
-public class InviteGuestServlet extends HttpServlet {
+@WebServlet("/GetEventServlet")
+public class GetEventServlet extends HttpServlet {
     @Serial
-    private static final long serialVersionUID = 8L;
+    private static final long serialVersionUID = 11L;
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp)
@@ -26,48 +28,44 @@ public class InviteGuestServlet extends HttpServlet {
         Map<String, String> params = Util.queryToMap(s);
         String result;
 
-        if (!params.containsKey("event_id") || !params.containsKey("email")) {
-            result = "{\"error\": \"request didn't include event_id and email\"}";
-        } else if (!inviteGuest(Integer.parseInt(params.get("event_id")),
-                params.get("email"))){
-            result = "{\"error\": \"could not invite user\"}";
+        if (!params.containsKey("event_id")) {
+            result = "{\"error\": \"request didn't include event_id\"}";
         } else {
-            result = "{}";
+            Event e = getEvent(Integer.parseInt(params.get("event_id")));
+
+            if (e == null)
+                result = "{\"error\": \"invitation could not be found " +
+                         "for this user for this event\"}";
+            else
+                result = new Gson().toJson(e);
         }
 
         resp.setContentType("application/json");
         resp.getWriter().println(result);
     }
 
-    // returns true if successful
-    private boolean inviteGuest(int eventId, String email) {
+    private Event getEvent(int eventId) {
         Connection conn = null;
         PreparedStatement ps = null;
         ResultSet rs = null;
 
         try {
             conn = Util.getConnection();
-
-            ps = conn.prepareStatement(
-                    "SELECT * FROM attendance WHERE event_id = ? AND email = ?");
+            ps = conn.prepareStatement("SELECT * FROM event WHERE id = ?");
             ps.setInt(1, eventId);
-            ps.setString(2, email);
             rs = ps.executeQuery();
 
-            // if found, this email is already invited to this event
-            if (rs.next())
-                return false;
+            // if not found, no such event
+            if (!rs.next())
+                return null;
 
-            ps.close();
-            ps = conn.prepareStatement(
-                    "INSERT INTO attendance " +
-                    "(event_id, qr_id, fname, lname, email) " +
-                    "VALUES (?, NULL, NULL, NULL, ?)");
-            ps.setInt(1, eventId);
-            ps.setString(2, email);
-            int rowsAffected = ps.executeUpdate();
-
-            return rowsAffected > 0;
+            return new Event(
+                    rs.getInt("id"),
+                    rs.getString("date"),
+                    rs.getString("time"),
+                    rs.getString("description"),
+                    rs.getString("location")
+            );
         } catch (SQLException | ClassNotFoundException e) {
             e.printStackTrace();
         } finally {
@@ -80,6 +78,6 @@ public class InviteGuestServlet extends HttpServlet {
             }
         }
 
-        return false;
+        return null;
     }
 }

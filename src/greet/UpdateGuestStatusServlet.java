@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.io.Serial;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Map;
@@ -51,12 +52,27 @@ public class UpdateGuestStatusServlet extends HttpServlet {
                                 String fname, String lname) {
         Connection conn = null;
         PreparedStatement ps = null;
+        ResultSet rs = null;
 
         try {
             conn = Util.getConnection();
 
+            ps = conn.prepareStatement(
+                    "SELECT * FROM attendance WHERE event_id = ? AND email = ?");
+            ps.setInt(1, eventId);
+            ps.setString(2, email);
+            rs = ps.executeQuery();
+
+            if (rs.next()) {
+                rs.getString("fname");
+                if (!rs.wasNull()) // if already filled in, user already accepted
+                    return false;
+            } else // user isn't invited
+                return false;
+
             int qrId = Util.createQR(eventId, email);
 
+            ps.close();
             ps = conn.prepareStatement(
                     "UPDATE attendance " +
                     "SET qr_id = ?, fname = ?, lname = ?, status = 1 " +
@@ -76,6 +92,7 @@ public class UpdateGuestStatusServlet extends HttpServlet {
             try {
                 if (conn != null) conn.close();
                 if (ps != null) ps.close();
+                if (rs != null) rs.close();
             } catch (SQLException e) {
                 e.printStackTrace();
             }

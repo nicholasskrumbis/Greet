@@ -35,11 +35,17 @@ public class GetInvitationServlet extends HttpServlet {
             int eventId = Integer.parseInt(params.get("event_id"));
             Event e = getEvent(eventId);
             User u = getPerson(eventId, params.get("email"));
-            JsonObject obj = new JsonObject();
-            Gson g = new Gson();
-            obj.add("event", g.toJsonTree(e));
-            obj.add("user", g.toJsonTree(u));
-            result = obj.toString();
+
+            if (e == null || u == null)
+                result = "{\"error\": \"invitation could not be found " +
+                         "for this user for this event\"}";
+            else {
+                JsonObject obj = new JsonObject();
+                Gson g = new Gson();
+                obj.add("event", g.toJsonTree(e));
+                obj.add("user", g.toJsonTree(u));
+                result = obj.toString();
+            }
         }
 
         resp.setContentType("application/json");
@@ -57,7 +63,9 @@ public class GetInvitationServlet extends HttpServlet {
             ps.setInt(1, eventId);
             rs = ps.executeQuery();
 
-            rs.next();
+            // if not found, no such event
+            if (!rs.next())
+                return null;
 
             return new Event(
                     rs.getInt("id"),
@@ -94,7 +102,9 @@ public class GetInvitationServlet extends HttpServlet {
             ps.setString(2, email);
             rs = ps.executeQuery();
 
-            rs.next();
+            // if not found, no invitation for this user
+            if (!rs.next())
+                return null;
 
             // id isn't needed
             return new User(-1,
