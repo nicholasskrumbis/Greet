@@ -159,9 +159,11 @@
 						console.log(events)
 						var id = events[i].eventId;
 
-						var preUrl = window.location.hostname;
-						if (window.location.port !== 80)
-							preUrl += ':' + window.location.port;
+						var url = "http://" + window.location.hostname;
+						var port = window.location.port;
+						if (port !== 80 && port !== "")
+							url += ':' + port;
+						url += "/Greet/accept.html?event_id=" + id;
 
 						document.getElementById("scheduled").innerHTML += 
 							'<div class=' + className + '>' +
@@ -180,7 +182,7 @@
 							'<input type="submit" value="Invite"><br/>' +
 							'<div id="' + id + 'Link" class="userInfo" style="font-size:16px;">' +
 							'<p>After inviting guests, send them this link to allow them to accept:</p>' +
-							'<p><mark>' + preUrl + '/Greet/accept.html?event_id=' + id + '</mark></p></div></form></div>';
+							'<p><mark><a href="' + url + '">' + url + '</a></mark></p></div></form></div>';
 					}
 				}
 			}
