@@ -18,6 +18,39 @@
         color: #dbdbdb;
         text-decoration: none;
     }
+    .navRight {
+		float: right;
+		font-size: 13px;
+		padding: 0px 5px 0px 15px;
+	}
+	.navRight:hover {
+		color: white;
+	}
+	table {
+  		border-collapse: collapse;
+  		max-width: 80%;
+  		margin: 5% 10%;
+  		overflow: hidden;
+	}
+	td, th {
+  		border: 1px solid #dddddd;
+  		text-align: left;
+  		padding: 12px;
+  		font-weight: normal;
+	}
+	tr:nth-child(odd) td {
+  		background-color: #f3f3f3;
+	}
+	#title td {
+		color: white;
+		background-color: #5190ED;
+	}
+	#title td {
+		font-weight: bold;
+	}
+	.check {
+		text-align:center;
+	}
     #logoutButton {
         padding: 0px 5px 0px 15px;
         color: white;
@@ -70,11 +103,6 @@
                     }
                     else {
                         for (var i = 0; i < guests.length; i++) {
-                            // not sure what to put here
-                            // var className = "\"eventInfo\"";
-                            // if (i === 0 && events.length > 1) {
-                            // 	className = "\"eventInfo1\"";
-                            // }
 
                             // variables from guest
                             var fname = guests[i].fname; // may be undefined
@@ -82,13 +110,32 @@
                             var email = guests[i].email; // will be defined
                             var status = guests[i].status; // 0 or 1
                             var attendance = guests[i].attendance; // 0 or 1
+                            
+                            if (fname == null) {
+                            	fname = "";
+                            }
+                            if (lname == null) {
+                            	lname = "";
+                            }
+                            
+                            var statusString = "Attending";
+                            var attendanceString = "";
+                            
+                            if (status == 0) {
+                            	statusString = "Not Attending";
+                            }
+                            if (attendance == 1) {
+                            	attendanceString = '<i class="fas fa-check fa-lg"></i>';
+                            }
+                            console.log(attendance);
 
                             // copy pasted from index.html, not sure how this should be formatted
-                            document.getElementById("attending").innerHTML +=
-                                '<div class=' + className + '>' +
-                                '<p>' + events[i].description + '</p>' +
-                                '<p>' + events[i].date + ' at ' + events[i].time + '</p>' +
-                                '<p>Location: ' + events[i].location + '</p>';
+                            document.getElementById("tbody").innerHTML +=
+                                `<tr><td>${fname}</td>
+                                <td>${lname}</td>
+                                <td>${email}</td>
+                                <td>${statusString}</td>
+                                <td class="check">${attendanceString}</td></tr>`;
                         }
                     }
                 }
@@ -112,6 +159,17 @@
     <button class="navRight" id="logoutButton" onclick="logout();">Logout</button>
 </div>
 
+<table id="guests" style="width:100%">
+	<tbody id="tbody">
+		<tr id="title">
+			<td>First Name</td>
+			<td>Last Name</td>
+			<td>Email</td>
+			<td>Status</td>
+			<td>Checked In</td>
+		</tr>
+	</tbody>
+</table>
 
 </body>
 </html>

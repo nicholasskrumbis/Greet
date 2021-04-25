@@ -82,7 +82,22 @@
 		padding: 0px 15px;
 	}
 	.eventInfo p, .eventInfo1 p {
-		width: 90%;
+		width: 70%;
+	}
+	.guestList:link, .guestList:visited {
+		background-color: #efefef;
+		font-weight: bold;
+		font-size: 16px;
+		color: black;
+		padding: 10px 15px;
+		text-align: center;
+		text-decoration: none;
+		float: right;
+		position:relative;
+		bottom: 115px;
+	}
+	.guestList:hover, .guestList:active {
+		background-color: lightgrey;
 	}
 	.expand {
 		cursor: pointer;
@@ -90,6 +105,7 @@
 		float: right;
 		position: relative;
 		bottom: 40px;
+		left: 85px;
 	}
 	#createEvent {
 		font-weight: bold;
@@ -160,6 +176,7 @@
 							'<p>' + events[i].description + '</p>' +
 							'<p>' + events[i].date + ' at ' + events[i].time + '</p>' +
 							'<p>Location: ' + events[i].location + '</p>' +
+							'<a class="guestList" href="./event.html?event_id=' + id + '">Guests</a>' +
 							'<button class="expand" type="button" onclick="openAdd(' + id + ');">' +
 							'<i class="fas fa-angle-down fa-2x"></i>' +
 							'</button>' +
@@ -255,26 +272,6 @@
 <div class="column">
 	<p class="colTitle">Your Scheduled Events:</p>
 	<div id="scheduled" class="userInfo">
-		<div class='eventInfo'>
-			<p>Nick's Valorant Tournament</p>
-			<p>4/22/21 at 10PM</p>
-			<p>Location: The Colosseum</p>
-			<button class="expand" type="button" onclick="openAdd('e104');">
-				<i class="fas fa-angle-down fa-2x"></i>
-			</button>
-			<div id="e104" style="margin-left:20px; display:none;" class="userInfo">
-				<p style="font-size:18px;">Invite Guests:</p>
-				<form id="e104Form" style="font-size:16px; margin-left:20px;" onsubmit="addGuest('e104'); return false;">
-					<label for="e104Email">Email: </label>
-					<input type="text" id="e104Email" name="email" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$" REQUIRED><br/><br/>
-					<input type="submit" value="Invite"><br/>
-				</form>
-				<div id="e104Link" class="userInfo" style="font-size:16px;">
-					<p>After invititing guests, send them this link to allow them to accept:</p>
-					<p><mark>window.location.hostname/Greet/accept.html?event_id=e104</mark></p>
-				</div>
-			</div>
-		</div>
 	</div>
 	<br/><br/>
 	<button id="createEvent" type="button" onclick="window.location.href='./create.html'">
