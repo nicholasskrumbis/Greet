@@ -45,7 +45,9 @@
 				const jsonResponse = JSON.parse(this.responseText);
 
 				if (jsonResponse.error) {
-					alert("Failed to find invitation for this user for this event");
+					alert("ERROR: this user isn't invited, or has already been checked in");
+					// hide checkin button
+					document.getElementById("checkInGuest").style.display = "none";
 				}
 				else {
 					document.getElementById("checkin").innerHTML = 

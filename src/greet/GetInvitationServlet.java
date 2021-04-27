@@ -97,12 +97,13 @@ public class GetInvitationServlet extends HttpServlet {
         try {
             conn = Util.getConnection();
             ps = conn.prepareStatement(
-                    "SELECT * FROM attendance WHERE event_id = ? AND email = ?");
+                    "SELECT * FROM attendance WHERE event_id = ? " +
+                    "AND email = ? AND attendance = 0");
             ps.setInt(1, eventId);
             ps.setString(2, email);
             rs = ps.executeQuery();
 
-            // if not found, no invitation for this user
+            // if not found, no invitation for this user, or already accepted
             if (!rs.next())
                 return null;
 
